@@ -1,0 +1,153 @@
+{% set source_type = component.source_type %}
+{% set source_value = source_type == 'categories' ? component.categories : (source_type == 'selected' ? component.products : []) %}
+<section class="AR-products-{{position}} AR-products products-slider products-slider-{{position}}">
+  <div class="py-8 ">
+    <div class="px-[10px]">
+
+      <!-- عنوان السكشن -->
+      <div class="flex items-center justify-between gap-4 pb-3 md:pb-6"
+           data-sal="fade"
+           data-sal-duration="600"
+           data-sal-easing="ease"
+           data-sal-repeat="true"
+      >
+        <div class="flex flex-col gap-1">
+            <h1 class="text-[clamp(1rem,1.0204rem+0.9796vw,1.25rem)] font-semibold  leading-6 text-primary  blocktitle {% if component.center_block_ttitle %} mx-auto {% endif %}">
+          {{ component.section_title }}
+        </h1>
+        {% if component.section_sub_title  %}
+        <p class="text-[clamp(.75rem,1.0204rem+0.9796vw,1)] underline hidden md:block leading-6 font-normal text-primary subtitle max-w-[230px] md:max-w-full {% if component.center_block_ttitle %} mx-auto {% endif %}">
+            {{ component.section_sub_title }}
+        </p>
+        {% endif %}
+        </div>
+
+       {# {% if not component.enable_controls %} #}
+          <a href="{{ component.rh_cat_btn_url }}" class="shrink-0 text-graytext cat-link text-[clamp(1rem,1rem+0vw,1rem)] md:leading-6 font-normal underlineADD TO WISHLIST"
+             data-sal="slide-left"
+             data-sal-duration="600"
+             data-sal-repeat="true"
+          >
+            {{ component.link_title }}
+          </a>
+        {# {% endif %} #}
+      </div>
+
+      <div class="relative">
+        <div class="relative"
+             data-sal="zoom-in"
+             data-sal-duration="700"
+             data-sal-delay="200"
+             data-sal-repeat="true"
+        >
+
+          {% if component.is_moving %}
+          <salla-products-slider
+            type="carousel"
+            class="product-slider"
+            slider-config='{
+              "slidesPerView": 1.5,
+              "spaceBetween": 10,
+              "speed": 1000,
+              "effect": "slide",
+              "lazy": true,
+              "breakpoints": {
+                "480": { "slidesPerView": 2, "spaceBetween": 10 },
+                "768": { "slidesPerView": 3, "spaceBetween": 10 },
+                "1240": { "slidesPerView": {{component.grid_cols_number}}, "spaceBetween": 10 }
+              },
+              "autoplay": {{ component.isp_autoPlay ? "{
+                \"delay\": 3000,
+                \"disableOnInteraction\": false,
+                \"pauseOnMouseEnter\": true
+              }" : "false" }},
+              "navigation": {
+                "nextEl": ".products-slider-{{ position }} .salla-slider-next",
+                "prevEl": ".products-slider-{{ position }} .salla-slider-prev"
+              }
+            }'
+            source="{{ source_type }}"
+            limit="8"
+            {% if source_type in ['selected', 'categories'] %}
+            source-value="[{{ source_value | map(item => item.id) | join(',') }}]"
+            {% endif %}
+            display-all-url="{{ display_all_url }}"
+            slider-id="slider-with-bg-{{ position }}"
+          >
+          </salla-products-slider>
+        <div class="z-20 flex gap-2 arrows"
+             data-sal="slide-left"
+             data-sal-duration="600"
+             data-sal-delay="200"
+             data-sal-repeat="true"
+        >
+         <div class="gap-2 arrows flex items-center h-fit max-w-fit mx-auto justify-between mt-[clamp(0.875rem,0.5306rem+1.4694vw,2rem)]">
+						<button class="salla-slider-prev items-center justify-center border border-primary p-2 rounded-sm {{component.enable_controls ? 'flex' : 'hidden'}}">
+							<i class="sicon-caret-right ltr:-scale-x-100 text-sm text-primary"></i>
+						</button>
+						<button class="salla-slider-next items-center justify-center border border-primary p-2 rounded-sm {{component.enable_controls ? 'flex' : 'hidden'}}">
+							<i class="sicon-caret-left ltr:-scale-x-100 text-sm text-primary"></i>
+						</button>
+					</div>
+        </div>
+          {% else %}
+          <salla-products-list
+            source="{{ source_type }}"
+            limit="8"
+            {% if source_type in ['selected', 'categories'] %}
+              source-value="[{{ source_value | map(item => item.id) | join(',') }}]"
+            
+            
+            {% endif %}
+          ></salla-products-list>
+
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+@media (min-width: 1024px) {
+    .AR-products-{{position}}{
+      .s-products-list-vertical-cards {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap:12px;
+      }      
+  } 
+}
+.AR-products-{{position}} .s-products-list-vertical-cards {
+      gap:16px;
+}
+.AR-products-{{position}} .swiper.s-slider-container {
+    padding: 10px 16px !important;
+}
+  .AR-products-{{position}}  .s-products-slider-card {
+    max-width: 100%;
+    padding: 0 !important;
+    }
+.AR-products-{{position}} .s-slider-block__title-nav{
+    display: none !important;
+}
+    .s-products-list-vertical-cards{
+      gap: 10px !important;
+    }
+{% if component.use_custom_colors %}
+
+	.AR-products-{{position}} .blocktitle{
+		color: {{component.blocktitle_color_light}} !important;
+
+	}
+	.AR-products-{{position}} .subtitle{
+		color: {{component.subtitle_color}} !important;
+
+	}
+	.AR-products-{{position}} .cat-link{
+		color: {{component.link_color_light}};
+
+	}
+  {% endif %}
+
+</style>

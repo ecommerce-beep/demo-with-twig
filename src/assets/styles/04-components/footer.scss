@@ -1,0 +1,109 @@
+.store-footer {
+  margin: 0 !important;
+  .s-payments-list-item {
+    width: 50px !important;
+    background-color: var(--color-background) !important;
+  }
+  @media (max-width: 768px) {
+    .s-contacts-item {
+      justify-content: start !important;
+    }
+  }
+  salla-apps-icons {
+    h3 {
+      display: none;
+    }
+    .s-apps-icons-item {
+      img {
+        max-width: 119px !important;
+      }
+    }
+  }
+  .store-description {
+    p {
+      @apply font-sans font-normal  text-base leading-6 tracking-normal;
+    }
+  }
+  .s-menu-footer-item {
+    margin-bottom: 12px !important;
+    @apply font-normal not-italic text-base !leading-6 tracking-normal;
+  }
+  .footer-description {
+    p {
+      @apply text-[clamp(0.75rem,0.75rem+0vw,0.75rem)] font-light leading-5;
+    }
+  }
+  @apply relative bg-darker text-background mt-8 sm:mt-16;
+
+  a {
+    @apply transition-opacity hover:opacity-75;
+    color: color-mix(in srgb, var(--color-primary) 30%, white);
+    line-height: 25px !important;
+    font-weight: 400;
+    font-size: 1rem;
+    transition: all 0.5s ease-in-out;
+    &:hover {
+      color: var(--color-background);
+    }
+  }
+
+  &__inner {
+    @apply bg-dark pt-8 lg:pt-16 border-b border-dashed border-b-white/10;
+  }
+
+  h3 {
+    @apply text-[clamp(1rem,0.9617rem+0.1633vw,1.125rem)] font-medium leading-[25px] mb-3 lg:mb-5;
+  }
+
+  .social-link {
+    @apply border rounded-full w-8 h-8  flex  hover:opacity-75 transition duration-300 text-sm;
+  }
+  .s-social-link a {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background-color: transparent;
+    color: color-mix(in srgb, var(--color-primary) 50%, white);
+    border: none;
+    transition: all 0.3s ease;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 50%, white);
+    &:hover {
+      background-color: color-mix(in srgb, var(--color-primary) 50%, white);
+      color: var(--color-font);
+    }
+  }
+  .contact-social {
+    @apply mt-5 pt-5 border-t border-white/10;
+
+    ul {
+      @apply mb-0;
+    }
+  }
+
+  .footer-is-light & {
+    @apply bg-primary text-background;
+
+    .store-footer__inner {
+      @apply bg-primary border-b-gray-200;
+      border-bottom-width: 0px !important ;
+    }
+
+    .social-link {
+      @apply border-gray-300;
+    }
+
+    .contact-social {
+      @apply border-background;
+    }
+  }
+}
+
+.copyright-text p {
+  @apply text-background;
+  a {
+    @apply text-background;
+    &:hover {
+      @apply text-background;
+    }
+  }
+}

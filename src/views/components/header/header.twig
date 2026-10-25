@@ -1,0 +1,902 @@
+{# ------------------------------
+Global Variables (from Theme)
+------------------------------- #}
+{% set topnav_bg = theme.settings.get('header-topnav-background') ?? 'var(--600, #000)' %}
+{% set _topnav_text_color_raw = theme.settings.get('header-topnav-text-color') %}
+{% set topnav_text_color = _topnav_text_color_raw is iterable ? (_topnav_text_color_raw[language.iso_code] ?? '') : (_topnav_text_color_raw ?? '') %}
+{% set _topnav_text_raw = theme.settings.get('header-topnav-text') %}
+{% set topnav_text = _topnav_text_raw is iterable ? (_topnav_text_raw[language.iso_code] ?? '') : _topnav_text_raw %}
+{% set _topnav_special_text_raw = theme.settings.get('header-topnav-special-text') %}
+{% set topnav_special_text = _topnav_special_text_raw is iterable ? (_topnav_special_text_raw[language.iso_code] ?? '') : _topnav_special_text_raw %}
+{% set topnav_special_text_color = theme.settings.get('header-topnav-special-text-color') ?? '#666666' %}
+{% set _link_url_raw = theme.settings.get('header_topnav_link_url') %}
+{% set link_url = _link_url_raw is iterable ? (_link_url_raw[language.iso_code] ?? '') : _link_url_raw %}
+{% set is_rtl = language.iso_code == 'ar' %}
+{% set countdown_target = theme.settings.get('header-topnav-count-down') %}
+{% set countdown_bg = theme.settings.get('count-down-background') ?? '#3f3f46' %}
+{% set countdown_text = theme.settings.get('count-down-text-color') ?? '#ffffff' %}
+{% set header_hover = theme.settings.get('header-hover') %}
+{% set header_bg_color = theme.settings.get('header-background-color') ?? '#ffffff' %}
+{% set header_text_color = theme.settings.get('header-text-color') ?? '#000000' %}
+{% set advanced_menu = theme.settings.get('advanced-menu') %}
+{% set add_another_logo = theme.settings.get('add_another_logo')%}
+{% set another_logo_img = theme.settings.get('another_logo_img')%}
+
+
+{# Expose a couple vars to JS context #}
+<script>
+	
+  window.isAdvancedMenuEnabled = {{ advanced_menu ? 'true' : 'false' }};
+  window.header_bg_color = '{{ header_bg_color }}';
+  window.header_text_color = '{{ header_text_color}}';
+  window.isHomePage = "{{ page.slug|default('') }}" === "index";
+  window.languageCode = '{{ language.iso_code }}';
+</script>
+
+ 
+
+<header class="store-header {{ header_bg }} {{page.slug == 'index'  ? 'w-full absolute top-0 left-0 home' : 'relative'}} z-50">
+	{# =====================================
+	      1) TOP NOTIFICATION BAR (Clickable)
+	      ====================================== #}
+
+	{# =====================================
+	      2) HEADER CORE (Hover styles supported)
+	      ====================================== #}
+		{% if page.slug == 'index' %}
+		{# Homepage header variables #}
+			{% if header_hover %}
+			{% set initial_bg = 'linear-gradient(0deg, rgba(17, 16, 16, 0) 0%, rgba(17, 16, 16, 0.1) 10%, rgba(17, 16, 16, 0.6) 65%)' %}
+			{% set initial_text = 'white' %}
+			{% set hover_vars = '--hover-bg:' ~ header_bg_color ~ '; --hover-text:' ~ header_text_color %}
+		{% else %}
+			{% set initial_bg = header_bg_color %}
+			{% set initial_text = header_text_color %}
+			{% set hover_vars = '' %}
+		{% endif %}
+	{% else %}
+		{# Other pages header variables #}
+		{% set initial_bg = header_bg_color %}
+		{% set initial_text = header_text_color %}
+		{% set hover_vars = '--hover-bg:' ~ header_bg_color ~ '; --hover-text:' ~ header_text_color %}
+	{% endif %}
+	<style>
+        #search-panel-wrapper.scrolled {
+			top: 54px;
+		}
+                #search-panel-wrapper.not-scrolled {
+			top: var(--header-height);
+                }
+		#mainnav:before {
+			background: {{initial_bg}};
+		}
+		#mobile-menu-overlay {
+			top: var(--header-height);
+		}
+		.fixed-pinned #mobile-menu-overlay {
+			top: var(--header-height);
+		}
+		#mobile-menu-overlay.scrolled {
+			top: 54px;
+		}
+		.fixed-pinned.site-header {
+			background: {{header_bg_color}}
+			!important;
+			color: {{header_text_color}}
+			!important;
+		}
+
+		.fixed-pinned.site-header-mobile {
+			background: {{header_bg_color}}
+			!important;
+			color: {{header_text_color}}
+			!important;
+		}
+		.site-header.header-scrolled {
+			background: {{header_bg_color}}
+			!important;
+			color: {{header_text_color}}
+			!important;
+		}
+		.site-header-mobile.header-scrolled {
+			background: {{header_bg_color}}
+			!important;
+			color: {{header_text_color}}
+			!important;
+		}
+			 #mega-content.scrolled {
+				top: 54px;
+			}
+
+		
+			#simple-menu.scrolled {
+				top: 54px;
+			}
+			#simple-menu.not-scrolled {
+				top: var(--header-height);
+			}
+	</style>
+
+	{# If hover is enabled, define CSS rule to apply dynamic background and text color on hover using CSS variables #}
+		<style>
+        	{% if header_hover %}
+
+			.site-header.active-overlay {
+				background: {{header_bg_color}}
+				!important;
+				color: {{header_text_color}}
+				!important;
+			}
+			header:hover .inner {
+				background: var(--hover-bg) !important;
+			}
+			header:hover .top-navbar {
+				background: var(--hover-bg) !important;
+			}
+			header:hover .top-navbar :is(p, span, a) {
+				color: var(--hover-text) !important;
+			}
+			header:hover .inner {
+				background: var(--hover-bg) !important;
+			}
+			header:hover .hover-box {
+				color: var(--hover-text) !important;
+			}
+			header:hover .logo-primary{
+				opacity:0;
+				
+			}
+			header:hover .logo-secondary{
+				opacity:1;
+				
+			}
+			.fixed-pinned.fixed-header{
+				.active-overlay {
+				background: {{header_bg_color}}
+				!important;
+				color: {{header_text_color}}
+				!important;
+			}
+			 .inner {
+				background: var(--hover-bg) !important;
+			}
+			.top-navbar {
+				background: var(--hover-bg) !important;
+			}
+			 .top-navbar :is(p, span, a) {
+				color: var(--hover-text) !important;
+			}
+			 .inner {
+				background: var(--hover-bg) !important;
+			}
+			 .hover-box {
+				color: var(--hover-text) !important;
+			}
+			 .logo-primary{
+				opacity:0;
+				
+			}
+			 .logo-secondary{
+				opacity:1;
+				
+			}
+
+			}
+            	{% endif %}
+				{% if page.slug != 'index' %}
+				
+			header .logo-primary{
+				opacity:0;
+				
+			}
+			header .logo-secondary{
+				opacity:1;
+				
+			}
+			{% endif %}
+
+		</style>
+
+	{# 'group' = parent hover trigger for .hover-box #}
+	<div class="relative">
+		<div id="mainnav" class="main-nav-container relative !h-fit !min-h-fit before:absolute before:content-[''] before:h-full before:w-full before:inset-0 before:-z-1">
+			
+			{% if link_url %}
+				<a href="{{ link_url }}" target="_blank" rel="noopener noreferrer" class="block no-underline top-lace" style="text-decoration: none;">
+				{% endif %}
+
+				<div class="top-lace flex w-full h-[38px] p-[7px_21px] justify-center items-center gap-[4px] lg:flex lg:px-[30px] lg:py-[7px] lg:justify-between lg:items-center lg:self-stretch {{ is_rtl ? 'flex-row-reverse' : 'flex-row' }}" style="background: {{ topnav_bg }}; color: {{ topnav_text_color }};">
+					<div class="flex justify-center items-center gap-1 flex-[1_0_0]">
+						<div
+							class="flex flex-row items-center gap-1">
+							{# Countdown Timer #}
+							<div id="countdown" data-countdown-target="{{ countdown_target }}" style="background: {{ countdown_bg }}; color: {{ countdown_text }};" class="flex h-[22px] px-[12px] py-[10px] justify-center items-center gap-[4px] rounded-lg lg:flex lg:h-[22px] lg:py-[4px] lg:px-4 lg:gap-2">
+								<div class="flex items-baseline gap-0.5">
+									<span id="cd-days" class="text-sm font-bold">0</span>
+									<span class="text-xs">
+										{{ trans('blocks.header.day') }}
+									</span>
+								</div>
+								<span class="text-sm">:</span>
+								<div class="flex items-baseline gap-0.5">
+									<span id="cd-hours" class="text-sm font-bold">0</span>
+									<span class="text-xs">
+										{{ trans('blocks.header.hour') }}
+									</span>
+								</div>
+								<span class="text-sm">:</span>
+								<div class="flex items-baseline gap-0.5">
+									<span id="cd-minutes" class="text-sm font-bold">0</span>
+									<span class="text-xs">
+										{{ trans('blocks.header.minute') }}
+									</span>
+								</span>
+							</div>
+							<span class="text-sm">:</span>
+							<div class="flex items-baseline gap-0.5">
+								<span id="cd-seconds" class="text-sm font-bold">0</span>
+								<span class="text-xs">
+									{{ trans('blocks.header.second') }}
+								</span>
+							</span>
+						</div>
+					</div>
+
+					{# First Text #}
+					<span class="text-center text-[10px] not-italic font-medium leading-[20px] tracking-normal lg:text-xs lg:leading-5 hidden lg:block" style="color: {{ topnav_text_color }}" >
+						{{ topnav_text }}
+					</span>
+
+
+					{# Special Text with custom color #}
+					<span class="text-center text-[11px] not-italic font-normal leading-[16px] tracking-normal lg:text-xs lg:leading-5" style="color: {{ topnav_special_text_color }}">
+						{{ topnav_special_text}}
+					</span>
+
+					{# Icon - User Image or Default #}
+					<span class="flex justify-center items-center w-[14px] h-[14px] lg:w-4 lg:h-4">
+						{% set icon = theme.settings.get('header_topnav_icon_url') %}
+						{% set icon_color = theme.settings.get('icon_color') %}
+						{% if icon %}
+							<i style="color:{{ icon_color }}"
+								class="{{ icon ?: 'sicon-home' }} text-sm">
+								</i>
+						{% endif %}
+					</span>
+					
+				</div>
+			</div>
+		</div>
+
+		{% if link_url %}
+		</a>
+	{% endif %}
+
+	<div style="{{ hover_vars }};" class="top-navbar px-16 {{ page.slug != 'index' ? 'not-home' : '' }}">
+		<div class="flex justify-between w-full">
+			{% if important_links %}
+				<salla-menu source="footer" topnav class="lg:!flex !hidden flex-1 justify-start text-background"></salla-menu>
+			{% endif %}
+			{% if store.scope %}
+				<button class="btn--rounded-gray" onclick="salla.event.dispatch('scopes::open', {'mode': 'default'})">
+					<i class="sicon-location rtl:ml-1 ltr:mr-1"></i>
+					{{ store.scope.name }}
+				</button>
+			{% endif %}
+			<salla-contacts is-header class="lg:flex hidden flex-1 {{ important_links ? 'lg:justify-center justify-start' : 'justify-start' }} gap-2 text-background"></salla-contacts>
+			{% if store.settings.is_multilingual or store.settings.currencies_enabled %}
+				<div class="flex items-center localize flex-1 lg:justify-end justify-center">
+					<button type="button" onclick="salla.event.dispatch('localization::open')" class="flex items-center justify-start gap-1 basis-0 !p-0">
+						<i class="sicon-world text-background"></i>
+						<span class="sm:mx-1.5 mx-1 !text-lg text-background">{{ user.language.name }}</span>
+						<span class="sm:mx-1.5 mx-1 !text-base text-background">-</span>
+						<span class="!text-lg text-background font-[inherit]">{{ currency.symbol }}</span>
+					</button>
+					<salla-localization-modal></salla-localization-modal>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+	<div
+		class="inner group w-full sticky top-0 z-50" style="{{ hover_vars }};">
+		{# header for pc view #}
+		<div
+			class="site-header hover-box w-full h-[60px] px-16 flex flex-row-reverse justify-between items-center hidden lg:flex" style="color: {{ initial_text }};">
+			{# ICONS SECTION #}
+			<div
+				class="flex flex-1 justify-end items-center md:gap-6 gap-2">
+				{# Search Toggle Button #}
+				<button id="search-toggle" class="flex items-center justify-center" aria-label="Open Search">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewbox="0 0 20 20">
+						<g clip-path="url(#clip0)">
+							<path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M17.5 17.5L13.875 13.875" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</g>
+						<defs>
+							<clipPath id="clip0">
+								<rect width="20" height="20" fill="white"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</button>
+
+				{# user icon #}
+				{% if user.type == 'user' %}
+					<salla-user-menu avatar-only show-header></salla-user-menu>
+				{% else %}
+					<button onclick="salla.event.dispatch('login::open')" class="flex items-center justify-center cursor-pointer">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none">
+							<g clip-path="url(#clip0_5899_2043)">
+								<path d="M16.6673 17.5V15.8333C16.6673 14.9493 16.3161 14.1014 15.691 13.4763C15.0659 12.8512 14.218 12.5 13.334 12.5H6.66732C5.78326 12.5 4.93542 12.8512 4.31029 13.4763C3.68517 14.1014 3.33398 14.9493 3.33398 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M9.99935 9.16667C11.8403 9.16667 13.3327 7.67428 13.3327 5.83333C13.3327 3.99238 11.8403 2.5 9.99935 2.5C8.1584 2.5 6.66602 3.99238 6.66602 5.83333C6.66602 7.67428 8.1584 9.16667 9.99935 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							</g>
+							<defs>
+								<clipPath id="clip0_5899_2043">
+									<rect width="20" height="20" fill="white"/>
+								</clipPath>
+							</defs>
+						</svg>
+					</button>
+				{% endif %}
+
+				{# Fav icon #}
+				<a href="{{ url('wishlist') }}" class="flex items-center justify-center z-50 relative" aria-label="Go to wishlist">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none">
+						<path d="M16.2796 4.55371C17.9068 6.1809 17.9068 8.81908 16.2796 10.4463L10.7071 16.0188C10.3166 16.4093 9.68341 16.4093 9.29288 16.0188L3.72039 10.4463C2.0932 8.81908 2.0932 6.1809 3.72039 4.55371C5.014 3.2601 6.57547 2.86401 8.15104 3.6328C8.7764 3.93794 9.59634 4.55371 9.99999 5.35806C10.4036 4.55371 11.2236 3.93794 11.8489 3.6328C13.4245 2.86401 14.986 3.2601 16.2796 4.55371Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</a>
+
+				{# Cart icon #}
+				{% if theme.settings.get('enable_side_cart') %}
+					{% include 'pages.partials.cart_options.twig' %}
+				{% else %}
+					<a class="relative flex items-center !min-h-fit !min-w-fit px-2" href="{{ store.url }}/cart">
+						<salla-cart-summary class="my-summary">
+							{% if cart_icon_choose %}
+								{% if cart_icon_type == 'cart_1' %}
+									<i class="sicon-shopping text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_2' %}
+									<i class="sicon-shopping-basket text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_3' %}
+									<i class="sicon-shopping-bag text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_4' %}
+									<i class="sicon-luggage-cart text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_5' %}
+									<i class="sicon-cart-add text-xl !block"></i>
+								{% else %}
+									<i class="sicon-shopping text-xl !block"></i>
+								{% endif %}
+							{% else %}
+								<i class="sicon-shopping text-xl !block"></i>
+							{% endif %}
+						</salla-cart-summary>
+					</a>
+				{% endif %}
+			</div>
+
+			{# LOGO SECTION #}
+			<div class="flex flex-col py-5 px-3 gap-[12px] flex-1 justify-center items-center" style="color: {{ initial_text }};">
+				<a class="navbar-brand" href="{{ store.url }}">
+					{% if add_another_logo and another_logo_img %}
+
+<div class="relative  w-full h-full group">
+
+							<img
+									src="{{ store.logo }}"
+									class="logo-primary w-full h-full object-contain transition-opacity duration-300 group-hover:opacity-0"
+									alt="{{ store.name }}"
+								>
+
+								<img
+									src="{{ another_logo_img }}"
+									class="logo-secondary absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+									alt="{{ store.name }} alternate logo"
+								>
+
+
+						</div>
+
+					{% else %}
+
+						<img
+							fetchpriority="high"
+							width="100%"
+							height="100%"
+							loading="eager"
+							src="{{ store.logo }}"
+							alt="{{ store.name }} logo"
+						>
+
+					{% endif %}
+
+					{% if is_page('index') %}
+						<h1 class="sr-only">{{ store.name }}</h1>
+					{% else %}
+						<h2 class="sr-only">{{ store.name }}</h2>
+					{% endif %}
+				</a>
+			</div>
+
+			{# Mega menu wrapper #}
+			<div id="custom-mega-menu-wrapper" class="hidden lg:relative lg:h-full lg:flex lg:items-center flex-1 justify-start not-scrolled">
+				<div
+					id="custom-mega-menu" class="relative h-full">
+					<!-- Tabs -->
+					<ul id="menu-tabs" class="flex gap-6 h-full items-center">
+						<li class="menu-skeleton h-4 w-16 rounded bg-current opacity-20 animate-pulse"></li>
+						<li class="menu-skeleton h-4 w-20 rounded bg-current opacity-20 animate-pulse"></li>
+						<li class="menu-skeleton h-4 w-14 rounded bg-current opacity-20 animate-pulse"></li>
+						<li class="menu-skeleton h-4 w-24 rounded bg-current opacity-20 animate-pulse"></li>
+						<li class="menu-skeleton h-4 w-16 rounded bg-current opacity-20 animate-pulse"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		{# header for mobile view #}
+		<div
+			class="site-header-mobile relative px-4 hover-box w-full h-[56px] p-x-[16px] flex flex-row-reverse justify-between items-center shrink-0 lg:hidden" style="color: {{ initial_text }};">
+
+			{# ICONS SECTION #}
+			<div
+				class="flex items-center gap-4">
+				{# user icon #}
+				{% if user.type == 'user' %}
+					<salla-user-menu avatar-only show-header></salla-user-menu>
+				{% else %}
+					<button onclick="salla.event.dispatch('login::open')" class="flex items-center justify-center cursor-pointer">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none">
+							<g clip-path="url(#clip0_5899_2043)">
+								<path d="M16.6673 17.5V15.8333C16.6673 14.9493 16.3161 14.1014 15.691 13.4763C15.0659 12.8512 14.218 12.5 13.334 12.5H6.66732C5.78326 12.5 4.93542 12.8512 4.31029 13.4763C3.68517 14.1014 3.33398 14.9493 3.33398 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M9.99935 9.16667C11.8403 9.16667 13.3327 7.67428 13.3327 5.83333C13.3327 3.99238 11.8403 2.5 9.99935 2.5C8.1584 2.5 6.66602 3.99238 6.66602 5.83333C6.66602 7.67428 8.1584 9.16667 9.99935 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							</g>
+							<defs>
+								<clipPath id="clip0_5899_2043">
+									<rect width="20" height="20" fill="white"/>
+								</clipPath>
+							</defs>
+						</svg>
+					</button>
+				{% endif %}
+
+				{# Wishlist #}
+				<a href="{{ url('wishlist') }}" class="flex items-center justify-center z-50 relative" aria-label="Go to wishlist">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none">
+						<path d="M16.2796 4.55371C17.9068 6.1809 17.9068 8.81908 16.2796 10.4463L10.7071 16.0188C10.3166 16.4093 9.68341 16.4093 9.29288 16.0188L3.72039 10.4463C2.0932 8.81908 2.0932 6.1809 3.72039 4.55371C5.014 3.2601 6.57547 2.86401 8.15104 3.6328C8.7764 3.93794 9.59634 4.55371 9.99999 5.35806C10.4036 4.55371 11.2236 3.93794 11.8489 3.6328C13.4245 2.86401 14.986 3.2601 16.2796 4.55371Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</a>
+
+				{# Cart icon #}
+				{% if theme.settings.get('enable_side_cart') %}
+					{% include 'pages.partials.cart_options.twig' %}
+				{% else %}
+					<a class="relative flex items-center !min-h-fit !min-w-fit px-2" href="{{ store.url }}/cart">
+						<salla-cart-summary class="my-summary">
+							{% if cart_icon_choose %}
+								{% if cart_icon_type == 'cart_1' %}
+									<i class="sicon-shopping text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_2' %}
+									<i class="sicon-shopping-basket text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_3' %}
+									<i class="sicon-shopping-bag text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_4' %}
+									<i class="sicon-luggage-cart text-xl !block"></i>
+								{% elseif cart_icon_type == 'cart_5' %}
+									<i class="sicon-cart-add text-xl !block"></i>
+								{% else %}
+									<i class="sicon-shopping text-xl !block"></i>
+								{% endif %}
+							{% else %}
+								<i class="sicon-shopping text-xl !block"></i>
+							{% endif %}
+						</salla-cart-summary>
+					</a>
+				{% endif %}
+			</div>
+
+			{# LOGO SECTION #}
+			<div class="flex w-[66px] h-[36px] p-[8px_0px] flex-col justify-center items-center gap-[12px] shrink-0 t py-5 px-3" style="color: {{ initial_text }};">
+				<a class="navbar-brand" href="{{ store.url }}">
+					<img fetchpriority="high" width="100%" height="100%" loading="eager" src="{{ store.logo }}" alt="{{ store.name }} logo">
+					{% if is_page('index') %}
+						<h1 class="sr-only">{{ store.name }}</h1>
+					{% else %}
+						<h2 class="sr-only">{{ store.name }}</h2>
+					{% endif %}
+				</a>
+			</div>
+
+			{# icons & menu #}
+			<div
+				class="flex items-center justify-between gap-4">
+				{# mobile nav button #}
+				<button
+					id="mobile-menu-toggle" class="flex items-center justify-center z-50 relative">
+					<!-- English icon -->
+					<svg id="icon-open" class="block rtl:-scale-x-100" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none">
+						<path d="M3.33398 15H9.16732M3.33398 5H16.6673H3.33398ZM3.33398 10H16.6673H3.33398Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+
+					<!-- Close icon (same for both languages) -->
+					<svg id="icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none">
+						<g clip-path="url(#clip0)">
+							<path d="M15.625 4.375L4.375 15.625" stroke="#27272A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M15.625 15.625L4.375 4.375" stroke="#27272A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</g>
+						<defs>
+							<clipPath id="clip0">
+								<rect width="20" height="20" fill="white"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</button>
+
+				{% if store.settings.is_multilingual or store.settings.currencies_enabled %}
+					<button type="button" onclick="salla.event.dispatch('localization::open')" class="flex z-50 relative items-center justify-center">
+						<i class="sicon-world"></i>
+					</button>
+				{% endif %}
+
+				{# Search Toggle Button #}
+				<button id="search-toggle" class="flex items-center justify-center" aria-label="Open Search">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewbox="0 0 20 20">
+						<g clip-path="url(#clip0)">
+							<path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M17.5 17.5L13.875 13.875" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</g>
+						<defs>
+							<clipPath id="clip0">
+								<rect width="20" height="20" fill="white"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{# =====================================
+          5) MOBILE MENU (Overlay) - Positioned outside mobile header
+          ===================================== #}
+
+
+{# Mega Content #}
+<div
+	id="mega-content" class="not-scrolled fixed flex flex-row items-start gap-[49px] left-0 w-screen h-[70vh] z-20 transform scale-y-0 opacity-0 pointer-events-none origin-top transition-all duration-300 -translate-y-full border-t border-gray-500" style="background: {{ header_bg_color }};">
+	{# Left: Child Categories Wrapper #}
+	<div class="flex w-[328px] h-full flex-col items-start gap-[20px] shrink-0 bg-zinc-100">
+		<ul id="mega-childs" class="w-full p-[48px_68px_48px_64px] space-y-2" style="color: {{ initial_text }};"></ul>
+	</div>
+
+	{# Right: Subcategories + Images Section #}
+	<div
+		class="flex w-[994px] py-[48px] flex-col gap-[16px]">
+		{# Category Title #}
+		<div class="w-full border-b border-gray-500">
+			<span id="mega-category-title" class="w-full self-stretch text-zinc-800 text-sm font-medium leading-4 tracking-wide uppercase"></span>
+		</div>
+
+		{# Subcategories + Images flex row #}
+		<div
+			class="flex items-start w-full justify-between">
+			{# Subcategories List(s) #}
+			<div id="mega-subcategories" class="flex items-start gap-4" style="color: {{ initial_text }};"></div>
+
+			{# Images #}
+			<div id="mega-images" class="flex gap-2 align-center" style="color: {{ initial_text }};"></div>
+		</div>
+	</div>
+</div>
+
+{# Search Panel #}
+<div id="search-panel-wrapper" class="fixed w-full h-full lg:h-[70vh] overflow-hidden pointer-events-none not-scrolled">
+	<div id="search-panel" class="h-full relative z-30 w-full bg-white transition-all duration-300 -translate-y-full">
+		<div class="mx-auto flex flex-col items-start gap-6 lg:gap-[32px] w-full max-w-full px-4 py-4 lg:w-[777px] lg:px-0 lg:py-6">
+			<div class="flex h-[40px] items-center self-stretch">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none">
+					<g clip-path="url(#clip0_6813_1469)">
+						<path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="#9F9FA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="M17.5 17.5L13.875 13.875" stroke="#9F9FA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					</g>
+					<defs>
+						<clipPath id="clip0_6813_1469">
+							<rect width="20" height="20" fill="white"/>
+						</clipPath>
+					</defs>
+				</svg>
+				<div class="relative w-full mx-auto">
+					<input
+					id="custom-search-input" type="text" placeholder="{{ trans('blocks.header.search_label') }}" class="w-full border-0 border-b border-gray-300 focus:outline-none focus:border-b focus:border-gray-500"/>
+					<!-- Results Dropdown -->
+					<div id="custom-search-results" class="absolute left-0 right-0 bg-white border border-gray-200 rounded-lg z-50 hidden">
+						<ul id="custom-search-list" class="divide-y divide-gray-100 max-h-64 overflow-y-auto"></ul>
+						<div id="custom-no-results" class="text-gray-500 px-4 py-2 hidden">{{ trans('blocks.header.no_results') }}</div>
+					</div>
+				</div>
+			</div>
+			<!-- Search Input -->
+			<!-- Result container -->
+			<div id="search-results" class="mt-4 hidden"></div>
+			<div id="no-results" class="mt-4 hidden text-red-500">{{ trans('blocks.header.no_results') }}</div>
+
+			<div
+				class="flex flex-col items-start gap-8 lg:gap-12 self-stretch">
+				{# Trending keywords #}
+				{% set trending_keywords = theme.settings.get('trending-search-keywords') %}
+				{% set trending_keywords_filtered = [] %}
+				{% for item in trending_keywords %}
+					{% set keyword = item['search-keyword'][language.iso_code] | trim %}
+					{% if keyword != '' %}
+						{% set trending_keywords_filtered = trending_keywords_filtered | merge([item]) %}
+					{% endif %}
+				{% endfor %}
+
+				{% if trending_keywords_filtered | length > 0 %}
+					<div class="flex flex-col sm:flex-row w-full items-start sm:items-center gap-4 lg:gap-[15px]">
+						<h4 class="text-sm font-medium leading-6 tracking-wide">
+							{{ trans('blocks.header.trending') }}
+						</h4>
+						<div class="flex flex-wrap items-center gap-x-4 gap-y-2 lg:gap-x-8">
+							{% for item in trending_keywords_filtered %}
+								{% set keyword = item['search-keyword'][language.iso_code] | trim %}
+								<span class="flex items-center gap-1">
+									<svg class="w-4 h-4 stroke-[#9F9FA9]" fill="none" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+										<path d="M8 5.33333V8L10 10M14 8C14 8.78793 13.8448 9.56815 13.5433 10.2961C13.2417 11.0241 12.7998 11.6855 12.2426 12.2426C11.6855 12.7998 11.0241 13.2417 10.2961 13.5433C9.56815 13.8448 8.78793 14 8 14C7.21207 14 6.43185 13.8448 5.7039 13.5433C4.97595 13.2417 4.31451 12.7998 3.75736 12.2426C3.20021 11.6855 2.75825 11.0241 2.45672 10.2961C2.15519 9.56815 2 8.78793 2 8C2 6.4087 2.63214 4.88258 3.75736 3.75736C4.88258 2.63214 6.4087 2 8 2C9.5913 2 11.1174 2.63214 12.2426 3.75736C13.3679 4.88258 14 6.4087 14 8Z" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+									</svg>
+									<button type="button" class="trending-keyword-btn" data-keyword="{{ keyword|e }}">
+										{{ keyword }}
+									</button>
+								</span>
+							{% endfor %}
+						</div>
+					</div>
+				{% endif %}
+
+				{# Popular categories #}
+				{% set categories = theme.settings.get('popular_categories') %}
+				{% set valid_categories = [] %}
+				{% for category in categories %}
+					{% set _img_raw = category['popular_categories_image'] %}
+					{% set image = _img_raw is iterable ? (_img_raw['url'] ?? (_img_raw[language.iso_code] ?? '')) : (_img_raw ?? '') %}
+					{% set image = image | trim %}
+					{% if image != '' %}
+						{% set valid_categories = valid_categories | merge([category]) %}
+					{% endif %}
+				{% endfor %}
+
+				{% if valid_categories | length > 0 %}
+					<div class="flex flex-col items-start gap-4 lg:gap-6 self-stretch">
+						<h4 class="text-lg lg:text-xl font-semibold leading-7 lg:leading-8 tracking-wide">
+							{{ trans('blocks.header.featured_categories') }}
+						</h4>
+						<salla-slider id="search-slider" class="search-slider lg:w-[777px] w-[95vw]" slider-config='{"slidesPerView":2,"spaceBetween":4,"lazy":true,"speed":300,"loop":false,"breakpoints":{"400":{"slidesPerView":2.5},"640":{"slidesPerView":3},"860":{"slidesPerView":4}}}' show-controls="false" type="thumbs">
+							<div slot="items">
+								{% for category in valid_categories %}
+									<div>
+										{% set _lnk_raw = category['popular_categories_link'] %}
+										{% set link = _lnk_raw is iterable ? (_lnk_raw[language.iso_code] ?? '') : (_lnk_raw ?? '') %}
+										{% set _img2_raw = category['popular_categories_image'] %}
+										{% set image = _img2_raw is iterable ? (_img2_raw['url'] ?? (_img2_raw[language.iso_code] ?? '')) : (_img2_raw ?? '') %}
+										{% set image = image | trim %}
+										{% if image != '' %}
+											{% if link %}
+												<a href="{{ link }}" class="bg-gray-100 aspect-[4/3] flex items-center justify-center overflow-hidden">
+													<img src="{{ image }}" alt="Category" class="object-cover w-full h-full">
+												</a>
+											{% else %}
+												<div class="bg-gray-100 aspect-[4/3] flex items-center justify-center overflow-hidden">
+													<img src="{{ image }}" alt="Category" class="object-cover w-full h-full">
+												</div>
+											{% endif %}
+										{% endif %}
+									</div>
+								{% endfor %}
+							</div>
+						</salla-slider>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<div id="mobile-menu-overlay" class="not-scrolled fixed inset-0 z-30 lg:hidden bg-black bg-opacity-50 transition-opacity duration-300 {{ is_rtl ? 'translate-x-full' : '-translate-x-full' }}">
+	<div
+		id="mobile-menu-wrapper" class="absolute top-0 left-0 right-0 z-30 bg-white flex flex-col max-h-[calc(100vh-56px)] overflow-hidden">
+
+		{# menu tabs #}
+		<div class="tabs border-t border-b text-sm font-semibold gap-[12px] py-3 px-4 ">
+			<div class="flex flex-col items-center gap-[12px] self-stretch">
+				<div
+					id="mobile-menu-tabs" class="flex justify-around gap-[16px] w-full overflow-x-auto no-scrollbar">
+						<div class="menu-skeleton h-4 w-16 rounded bg-zinc-200 animate-pulse"></div>
+						<div class="menu-skeleton h-4 w-20 rounded bg-zinc-200 animate-pulse"></div>
+						<div class="menu-skeleton h-4 w-14 rounded bg-zinc-200 animate-pulse"></div>
+				</div>
+			</div>
+		</div>
+
+		{# Scrollable Menu Content #}
+		<div
+			id="mobile-menu-content" class="flex-1 flex flex-col overflow-y-auto p-5 no-scrollbar">
+				<div class="menu-skeleton h-4 w-3/4 rounded bg-zinc-200 animate-pulse mb-4"></div>
+				<div class="menu-skeleton h-4 w-1/2 rounded bg-zinc-200 animate-pulse mb-4"></div>
+				<div class="menu-skeleton h-4 w-2/3 rounded bg-zinc-200 animate-pulse mb-4"></div>
+				<div class="menu-skeleton h-4 w-3/5 rounded bg-zinc-200 animate-pulse mb-4"></div>
+		</div>
+
+		{# Optional: Subcategory Panel #}
+		<div id="mobile-subcategory-content" class="absolute w-full overflow-y-auto no-scrollbar transition-transform duration-500 ease-in-out" style="background: {{ header_bg_color }}; "></div>
+
+	</div>
+</div></div></header>{# =====================================
+	3) DESKTOP MEGA MENU LAYER
+	===================================== #}{# in pc view #}{# Background Overlay #}<div id="mega-overlay-background" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden"> </div>{# =====================================
+	4) SIMPLE MENU (Fallback / compact)
+	===================================== #}<div id="simple-menu" class="not-scrolled w-[242px] h-[375px]  p-[24px_24px_40px_24px] items-start gap-[16px] shrink-0
+	     flex flex-col bg-white fixed  z-20
+	            transform scale-y-0 opacity-0 pointer-events-none
+	            origin-top transition-all duration-200" ><ul id="simple-menu-list" class="flex flex-col p-4 space-y-2 text-sm text-black"></ul></div>{# =====================================
+	6) SEARCH OVERLAY PANEL
+	===================================== #}<div id="search-overlay-container" class="fixed inset-0 z-20 hidden"><div id="search-overlay-background" class=" sm:top-0 absolute left-0 right-0 bottom-0 bg-black bg-opacity-50"></div></div><aside id="sidecart-panel" class="side-panel bg-white side-panel--left fixed top-0 h-full bg-bg-light dark:bg-bg-dark z-[101] w-full md:w-[437px] flex flex-col transform translate-x-full rtl:-translate-x-full transition-transform duration-300 ease-in-out invisible !pointer-events-auto"><div class="side-panel__top flex items-center relative z-[2] p-5">
+<button class="menu-close bg-[var(--color-primary)] text-white rounded-full absolute top-5 rtl:left-5 ltr:right-5 w-7 h-7 flex items-center justify-center" aria-label="close">
+	<i class="sicon-cancel text-xl"></i>
+</button></div><div class="side-panel__content grow overflow-auto px-5 pt-5 pb-5 opacity-0 translate-x-10 rtl:-translate-x-10 transition-all duration-500">
+<h2 class="mb-8 text-xl font-semibold flex items-center gap-2">
+	{{ trans('pages.checkout.cart') }}
+	<span class="sidecart-products-count text-gray-500 text-sm"></span>
+</h2>
+                    <div class="shadow-default p-5 xs:p-7 bg-transparent {{ cart.free_shipping_bar ? '' : 'hidden' }}" id="free-shipping">
+                        <div class="flex rtl:space-x-reverse space-x-3 items-center">
+                            
+                            <i class="bg-primary !hidden text-white rounded-icon sicon-shipping-fast {{ theme.is_rtl ? 'flip-x':'' }}"></i>
+                            {% set is_free=cart.free_shipping_bar.has_free_shipping %}
+                            <div class="flex-1">
+                                 
+                                <p class="flex gap-1 shipping-item text-sm font- text-gray-500">
+                                        <i class=" {{ theme.is_rtl ? 'flip-x':'' }}"><svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                    height="20" viewBox="0 0 20 20" fill="none">
+                                    <path
+                                        d="M20 3.75V5H8.125V14.375H11.9725C12.2513 13.3006 13.2175 12.5 14.375 12.5C15.5325 12.5 16.4987 13.3006 16.7775 14.375H17.5V11.25H18.75V15.625H16.7775C16.4987 16.6994 15.5325 17.5 14.375 17.5C13.2175 17.5 12.2513 16.6994 11.9725 15.625H6.7775C6.49875 16.6994 5.5325 17.5 4.375 17.5C3.2175 17.5 2.25125 16.6994 1.9725 15.625H0V10.5275L0.0393753 10.4294L1.28938 6.67938L1.425 6.25H6.875V3.75H20ZM19.375 6.25V7.5H13.75V6.25H19.375ZM6.875 7.5H2.32438L1.25 10.7031V14.375H1.9725C2.25125 13.3006 3.2175 12.5 4.375 12.5C5.5325 12.5 6.49875 13.3006 6.7775 14.375H6.875V7.5ZM18.75 8.75V10H15V8.75H18.75ZM14.375 13.75C13.6769 13.75 13.125 14.3019 13.125 15C13.125 15.6981 13.6769 16.25 14.375 16.25C15.0731 16.25 15.625 15.6981 15.625 15C15.625 14.3019 15.0731 13.75 14.375 13.75ZM4.375 13.75C3.67687 13.75 3.125 14.3019 3.125 15C3.125 15.6981 3.67687 16.25 4.375 16.25C5.07312 16.25 5.625 15.6981 5.625 15C5.625 14.3019 5.07312 13.75 4.375 13.75Z"
+                                        fill="#71717B" />
+                                </svg></i>
+                                        <span id="free-shipping-msg">{{ (is_free
+                                            ?trans('pages.cart.has_free_shipping')
+                                            :trans('pages.cart.free_shipping_alert', {'amount': cart.free_shipping_bar.remaining|money}))
+                                            | raw }}</span>
+                                    <span class="emoji {{ is_free?'':'hidden' }}" id="free-shipping-applied">🎉</span>
+                                </p>
+                            </div>
+                        </div>
+      <div class="mt-2 overflow-hidden {{ is_free ? 'hidden' : '' }}"
+     id="free-shipping-bar"
+      style="height:4px; background-color:#E4E4E7;">
+    <div class="progress-bg transition-all duration-500 h-full bg-[#C5992C]"
+         style="width:{{ cart.free_shipping_bar.percent }}%">
+    </div>
+</div>
+                    </div>
+<div id="sidecart-items"></div></div><div class="side-panel__bottom mt-auto p-5 flex flex-col gap-5 border-t border-font-secondary">
+<div class=" border-gray-200 border-b py-5 mb-5">
+
+	<label for="coupon" class="block text-sm">{{
+        trans("pages.cart.have_coupon")
+      }}</label>
+	<div class="mt-2.5 relative">
+		<input placeholder="{{ trans("pages.cart.coupon_placeholder") }}" {{ cart.coupon ? "disabled" : "" }} class="rtl:pl-24 ltr:pr-24 form-input
+			        bg-[color-mix(in_srgb,var(--color-primary)_5%,transparent)]" value="{{ cart.coupon }}" id="coupon-input-sidecart" name="coupon" aria-label="Apply coupon" type="text">
+
+		<salla-button class="btn--coupon {{
+			            cart.coupon
+			              ? 'has-coupon btn--danger'
+			              : 'has-not-coupon btn--default'
+			          }}" loader-position="center" id="coupon-btn-sidecart">
+			<span class="coupon-text">{{ trans("pages.cart.save_coupon") }}</span>
+			<i class="sicon-cancel icon text-xl w-8"></i>
+		</salla-button>
+	</div>
+	<span class="text-xs text-red-700" id="coupon-error-sidecart"></span>
+</div>
+<div class="flex justify-between text-sm">
+	<span class="text-gray-500">{{ trans('pages.cart.items_total') }}</span>
+	<b id="sidecart-subtotal"></b>
+</div>
+
+<div class="flex justify-between text-sm">
+	<span class="text-gray-500">{{ trans('pages.cart.discount') }}</span>
+	<b id="sidecart-total-discount"></b>
+</div>
+
+<div class="cart-subtotal flex justify-between items-center border-t border-font-secondary pt-3">
+	<div>
+		<h5 class="font-semibold">{{ trans('pages.cart.final_total') }}</h5>
+		{% if store.settings.tax.taxable_prices_enabled %}
+			<small class="opacity-70">
+				<span class="text-red-600">*</span>
+				{{ trans('pages.products.tax_included') }}
+			</small>
+		{% endif %}
+	</div>
+
+	<strong id="sidecart-total" class="total-value text-lg"></strong>
+</div>
+<div class="flex gap-1">
+		<button class="close-side-panel flex-1 bg-batext-background font-medium border border-1 border-primary flex items-center justify-center gap-4  text-primary dark:text-gray-300 py-3 hover:bg-gray-200  transition">
+		{{ trans('pages.offer.continue_shopping') }}
+	</button>
+	<a href="{{ link('cart') }}" id="sidecart-submit" class="cart-submit-btn flex-1 flex items-center justify-center gap-2 bg-primary text-background  py-3 hover:bg-primary transition">
+		<i class="smticon-cart text-lg"></i>
+		<span>{{ trans('pages.cart.goToCartPage') }}</span>
+	</a>
+
+
+</div></div></aside><div id="sidecart-overlay" class="fixed inset-0 bg-black/50 z-[100] hidden opacity-0 transition-opacity duration-300"></div>
+
+{# fix simple menu  #}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const simpleMenu = document.getElementById("simple-menu");
+    const ad = document.querySelector("salla-advertisement");
+    const header = document.querySelector("#mainnav");
+
+    if (!simpleMenu) return;
+
+    function getAdHeight() {
+        if (!ad) return 0;
+
+        const style = getComputedStyle(ad);
+        const hidden =
+            style.display === "none" ||
+            style.visibility === "hidden" ||
+            style.height === "0px" ||
+            ad.offsetHeight === 0;
+
+        return hidden ? 0 : ad.offsetHeight;
+    }
+
+    function updateHeaderVariable() {
+        const scrolled = window.scrollY > 0;
+        const headerHeight = header ? header.getBoundingClientRect().height : 0;
+        // Only include ad height when at the top
+        const adHeight = !scrolled ? getAdHeight() : 0;
+
+        document.documentElement.style.setProperty(
+            "--header-height",
+            (headerHeight + adHeight) + "px"
+        );
+    }
+
+    function updateSimpleMenu() {
+        const scrolled = window.scrollY > 0;
+        simpleMenu.classList.toggle("scrolled", scrolled);
+        simpleMenu.classList.toggle("not-scrolled", !scrolled);
+    }
+
+    function updateAll() {
+        updateHeaderVariable();
+        updateSimpleMenu();
+    }
+
+    // Run once immediately
+    updateAll();
+
+    // Re-run after a tick so the ad/header have rendered
+    setTimeout(updateAll, 100);
+    setTimeout(updateAll, 500); // fallback for slow-loading ad
+
+    window.addEventListener("scroll", updateAll);
+    window.addEventListener("resize", updateAll);
+
+    // Watch ad for size changes (handles ad appearing/disappearing)
+    if (ad) {
+        const ro = new ResizeObserver(updateAll);
+        ro.observe(ad);
+    }
+    if (header) {
+        const ro = new ResizeObserver(updateAll);
+        ro.observe(header);
+    }
+});
+</script>

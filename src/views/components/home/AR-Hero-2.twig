@@ -1,0 +1,89 @@
+<section class="AR-hero-section AR-hero-section-{{position}}">
+    <div class="wrapper">
+        <div class="banner flex flex-col items-center justify-center relative md:h-[90vh] h-[100svh] py-6 md:px-4 px-2 overflow-hidden">
+            {% if not component.button_text %}
+                <a class="w-full h-full absolute inset-0 z-[5]" href="{{component.url}}"></a>
+            {% endif %}
+
+            {% set alignment = component.items_alignment.value ?? component.items_alignment ?? "center" %}
+            {% set align_class = alignment == "start" ? "text-start items-start" : 
+                                 alignment == "end"   ? "text-end items-end"     : 
+                                                        "text-center items-center" %}
+
+            <div class="text-wrapper h-full flex flex-col {{ align_class }} justify-center sm:gap-4 gap-2 mx-auto relative z-2 container">
+                <div class="position {{ align_class }} flex flex-col justify-center">
+
+                    {% if component.block_title %}
+                        <h1 data-swiper-parallax="-500" aria-label="Block title" 
+                            class="blocktitle leading-snug text-[clamp(1.5rem,1.0408rem+1.9592vw,3rem)] text-background font-medium transition-all duration-700 ease-in-out">
+                            {{component.block_title}}
+                        </h1>
+                    {% endif %}
+
+                    {% if component.subtext %}
+                        <p data-swiper-parallax="-250" 
+                           class="subtext text-background font-light text-[clamp(0.875rem,0.7602rem+0.4898vw,1.25rem)] transition-all duration-700 ease-in-out">
+                            {{component.subtext}}
+                        </p>
+                    {% endif %}
+
+                </div>
+            </div>
+
+                {% if component.button_text %}
+                    <a data-swiper-parallax="-300"
+                       class="block text-center button button-{{loop.index}} self-center rounded-md bg-primary mt-auto text-background px-4 sm:px-7 py-2 text-[clamp(0.75rem,0.6447rem+0.4493vw,1.094rem)] transition-all hover:bg-background hover:text-primary border border-[color-mix(in srgb,var(--color-primary)15%,white)] hover:border-primary justify-self-end"
+                       href="{{component.url}}">
+                        {{component.button_text}}
+                    </a>
+            	{% endif %}
+
+        </div>
+    </div>
+</section>
+<style>
+
+
+{% if component.transparent_button %}
+.AR-hero-section-{{position}}  .button{
+	background-color: transparent;
+    color:{{component.button_text_color}};
+    border-color:{{component.button_text_color}};
+
+}
+.AR-hero-section-{{position}}  .button:hover{
+	background-color:{{component.button_text_color}};
+    color:{{component.button_bg}};
+}
+
+{% else %}
+
+.AR-hero-section-{{position}}  .button{
+	color:{{component.button_text_color}};
+	background-color:{{component.button_bg}};
+    border-color:{{component.button_text_color}};
+}
+.AR-hero-section-{{position}}  .button:hover{
+	background-color:{{component.button_text_color}};
+	color:{{component.button_bg}};
+    border-color:{{component.button_bg}};
+}
+{% endif %}
+.AR-hero-section-{{position}} .text-wrapper h1{
+	color:{{component.blocktitle_color}};
+}
+.AR-hero-section-{{position}} .text-wrapper p{
+	color:{{component.subtext_color}};
+}
+/* Mobile */
+.AR-hero-section-{{position}} .banner {
+    background: url({{component.mobile_bg}}) center center / cover no-repeat;
+}
+/* Desktop (default) */
+@media (min-width: 768px) {
+    .AR-hero-section-{{position}} .banner  {
+        background: url({{component.desktop_bg}}) center center / cover no-repeat;
+    }
+}
+
+</style>

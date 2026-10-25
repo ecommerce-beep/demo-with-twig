@@ -1,0 +1,1129 @@
+
+{#
+| Variable                               | Type                        | Description                                                            |
+|----------------------------------------|-----------------------------|------------------------------------------------------------------------|
+| page                                   | object                      |                                                                        |
+| page.title                             | string                      | *could be html                                                         |
+| page.slug                              | string                      | ex: "cat.show"                                                         |
+| product                                | Product                     |                                                                        |
+| product.id                             | int                         |                                                                        |
+| product.name                           | string                      |                                                                        |
+| product.description                    | string                      | HTML                                                                   |
+| product.url                            | string                      |                                                                        |
+| product.promotion_title                | string                      |                                                                        |
+| product.subtitle                       | string                      |                                                                        |
+| product.type                           | string                      | product, service, group_products, codes, digital, food, donating       |
+| product.status                         | string                      | sale, out, out-and-notify                                              |
+| product.weight                         | ?string                     |                                                                        |
+| product.calories                       | ?float                      |                                                                        |
+| product.sku                            | ?string                     |                                                                        |
+| product.rating                         | ?Rating                     |                                                                        |
+| product.rating.count                   | int                         |                                                                        |
+| product.rating.stars                   | int                         |                                                                        |
+| product.price                          | float                       | can be string too `-`, when merchant doesn't want to show zero         |
+| product.sale_price                     | float                       |                                                                        |
+| product.regular_price                  | float                       |                                                                        |
+| product.starting_price                 | ?float                      |                                                                        |
+| product.quantity                       | ?int                        | if it's null, means it's unlimited                                     |
+| product.sold_quantity                  | int                         |                                                                        |
+| product.max_quantity                   | int                         |                                                                        |
+| product.discount_ends                  | ?date                       |                                                                        |
+| product.is_taxable                     | bool                        | Is the tax included in the price                                       |
+| product.category                       | ?Category                   |                                                                        |
+| product.category.name                  | string                      |                                                                        |
+| product.category.url                   | string                      |                                                                        |
+| product.image                          | object                      |                                                                        |
+| product.image.url                      | string                      |                                                                        |
+| product.image.alt                      | ?string                     |                                                                        |
+| product.images                         | array                       |                                                                        |
+| product.images[].id                    | int                         |                                                                        |
+| product.images[].url                   | string                      |                                                                        |
+| product.images[].alt                   | ?string                     |                                                                        |
+| product.images[].video_url             | ?string                     |                                                                        |
+| product.images[].type                  | string                      | `image` `video`                                                        |
+| product.brand                          | ?object                     |                                                                        |
+| product.brand.id                       | int                         |                                                                        |
+| product.brand.url                      | ?string                     |                                                                        |
+| product.brand.name                     | ?string                     |                                                                        |
+| product.brand.logo                     | ?string                     |                                                                        |
+| product.tags                           | ?Tags[] *Collection         |                                                                        |
+| product.tags[].name                    | string                      |                                                                        |
+| product.tags[].url                     | string                      |                                                                        |
+| product.options                        | ProductOption[] *Collection | @see views/pages/partials/product/options.twig                         |
+| product.notify_availability            | ?object                     | does product outOfStock & can visitor subscribe to notify availability |
+| product.notify_availability.channels   | array                       | ex: ['sms', 'email']                                                   |
+| product.notify_availability.subscribed | bool                        | Does user subscribed before                                            |
+| product.donation                       | ?ProductDonation            |                                                                        |
+| product.donation.target_message        | ?string                     | Message if reached to target or target expired                         |
+| product.donation.collected_amount      | float                       |                                                                        |
+| product.donation.target_amount         | float                       |                                                                        |
+| product.donation.target_percent        | float                       |                                                                        |
+| product.donation.target_end_date       | ?Date                       |                                                                        |
+| product.donation.can_donate            | bool                        | `true` When there is no campaign or (target not reached & not expired) |
+| product.has_read_more                  | bool                        |                                                                        |
+| product.can_add_note                   | bool                        |                                                                        |
+| product.can_show_remained_quantity     | bool                        |                                                                        |
+| product.can_show_sold                  | bool                        |                                                                        |
+| product.can_upload_file                | bool                        |                                                                        |
+| product.has_custom_form                | bool                        | Is it for  `Food` or `Custom Service` product                          |
+| product.has_metadata                   | bool                        |                                                                        |
+| product.has_options                    | bool                        |                                                                        |
+| product.is_on_sale                     | bool                        | Product has discounted price                                           |
+| product.is_hidden_quantity             | bool                        | The quantity is hidden by merchant, or product not available           |
+| product.is_available                   | bool                        |                                                                        |
+| product.is_in_wishlist                 | bool                        |                                                                        |
+| product.is_out_of_stock                | bool                        |                                                                        |
+| product.is_require_shipping            | bool                        |                                                                        |
+| product.base_currency_price            | float                       | product.price with base currency (SAR)                                 |
+| product.discount_percentage            | ?string                     | ex: "20%"                                                              |
+| product.has_3d_image                   | bool                        |                                                                        |
+| product.has_size_guide                 | bool                        |                                                                        |
+| product.is_giftable                    | bool                        |                                                                        |
+| product.add_to_cart_label              | string                      |                                                                        |
+| product.currency                       | string                      |                                                                        |
+#}
+{% extends "layouts.master" %}
+
+{% block content %}
+				<nav class="breadcrumbs w-full py-2 px-4 lg:hidden">
+				<salla-breadcrumb></salla-breadcrumb>
+			</nav>
+
+      {#
+        Hook: product.single.before_product_info
+        Fires before the main product information section (images, title, price, etc.).
+        Use this hook to inject custom content or components above the product details area.
+    #}
+    <div class="s-blocks-wrapper s-before-product-info !mt-0">{% hook 'product.single.before_product_info' %}</div>
+
+	<div class="single lg:pt-7 bg-background ">
+		<div class="bg-background">
+			<div class="flex flex-col lg:gap-8 gap-4 items-center overflow-x-hidden lg:overflow-x-visible lg:items-start lg:flex-row lg:px-14" id="product-{{ product.id }}">
+				<div class="sidebar relative lg:!sticky  lg:top-8 !w-full lg:!w-[66%] lg:pb-16  shrink-0">
+					{# promotion  #}
+                    {% if product.promotion_title %}
+                                <div class="promotion-title">{{ product.promotion_title }}</div>
+                	{% endif %}
+
+					{% set has_many_images = product.images|length > 1 %}
+                    {% if theme.settings.get('grid_or_slider_products_page') %}
+					<div class=" grid-cols-2 gap-2 lg:gap-4 {% if theme.settings.get('grid_or_slider_in_mobile') %} hidden
+					lg:grid 
+					{% else %}
+						grid grid-cols-2
+					{% endif %}">
+						{% for image in product.images %}
+							{% if image.three_d_image_url %}
+								<model-viewer style="min-height: 500px;" class="swiper-slide model-entry w-full h-full" loading="eager" camera-controls touch-action="pan-y" auto-rotate poster="{{ image.url }}" src="{{ image.three_d_image_url }}" shadow-intensity="1" alt="{{ image.alt }}"></model-viewer>
+							{% else %}
+								<a data-fslightbox="product_{{ product.id }}" data-img-id="{{ image.id }}" data-slid-index="{{ loop.index-1 }}" {% if image.video_url %} data-video-src="{{ image.video_url }}" {% endif %} data-caption="{{ image.alt }}" data-infinite="false" data-type="{{ image.video_url?'youtube':'image' }}" href="{{ (image.video_url is iterable ? image.video_url|first : image.video_url)|default(image.url) }}" aria-label="{{ product.name }}" 
+									class=" {% if not has_many_images %} col-span-2 {% endif %} img_items swiper-slide magnify-wrapper homeslider__slide  {{ image.video_url?'video-entry':'' }}  rounded-3xl">
+									{% if loop.first %}
+										<img id="{{image.id}}" fetchpriority="high" loading="eager" src="{{ image.url }}" alt="{{ image.alt }}" class="w-full h-full  object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
+									{% else %}
+										<img id="{{image.id}}" src="{{ 'images/s-empty.png' | cdn }}" data-src="{{ image.url }}" alt="{{ image.alt }}" class="w-full lazy h-full  object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
+									{% endif %}
+								</a>
+							{% endif %}
+						{% endfor %}
+					</div>
+					 	<salla-slider
+							id="thumbs-{{product.id}}"
+							show-controls="false"
+							type="thumbs"
+							show-thumbs-controls="false"
+							class="product-images-slider block flex-grow  {% if theme.settings.get('grid_or_slider_in_mobile') %}
+											lg:!hidden
+											{% else %}
+												!hidden
+											{% endif %}"
+							slider-config='{
+								"slidesPerView": 1.2,
+								"spaceBetween": 10,
+							"autoplay": {
+									"delay": 3000,
+									"disableOnInteraction": false
+								},
+								"breakpoints": {
+									"768": {
+										"slidesPerView": 1.2,
+										"spaceBetween": 10
+									}
+								}
+							}'
+						>
+						
+
+                    
+
+                            {# Calories Badge #}
+                            {% if product.calories %}
+                                <div class="absolute z-[2] top-4 rtl:left-4 ltr:right-4 bg-background shadow-sm flex flex-col justify-center items-center rounded-full w-20 h-20 lg:w-24 lg:h-24">
+                                    <span class="text-red-500 text-xl leading-none font-bold">{{ product.calories }}</span>
+                                    <span class="text-xs text-gray-500">{{ trans('pages.products.calories') }}</span>
+                                </div>
+                            {% endif %}
+
+                            <div slot="items">
+                                {% for image in product.images %}
+                                    {% if image.three_d_image_url %}
+                                        <model-viewer style="min-height: 500px;" class="swiper-slide model-entry w-full h-full" loading="eager" camera-controls touch-action="pan-y" auto-rotate poster="{{ image.url }}" src="{{ image.three_d_image_url }}" shadow-intensity="1" alt="{{ image.alt }}"></model-viewer>
+                                    {% else %}
+                                        <a data-fslightbox="product_{{ product.id }}" data-img-id="{{ image.id }}" data-slid-index="{{ loop.index-1 }}" {% if image.video_url %} data-video-src="{{ image.video_url }}" {% endif %} data-caption="{{ image.alt }}" data-infinite="false" data-type="{{ image.video_url?'youtube':'image' }}" href="{{ (image.video_url is iterable ? image.video_url|first : image.video_url)|default(image.url) }}" aria-label="{{ product.name }}" 
+                                            class=" img_items swiper-slide magnify-wrapper homeslider__slide  {{ image.video_url?'video-entry':'' }}  rounded-3xl">
+                                            {% if loop.first %}
+                                                <img id="{{image.id}}" fetchpriority="high" loading="eager" src="{{ image.url }}" alt="{{ image.alt }}" class="w-full h-full  object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
+                                            {% else %}
+                                                <img id="{{image.id}}" src="{{ 'images/s-empty.png' | cdn }}" data-src="{{ image.url }}" alt="{{ image.alt }}" class="w-full lazy h-full  object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
+                                            {% endif %}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                           
+                        </salla-slider>
+                    {% else %}
+                        
+                        <salla-slider 
+                                id="details-slider-{{ product.id }}" 
+                                class="image-slider details-slider image-slider" 
+                                type="thumbs" 
+                                loop="false" 
+                                grid-thumbs="false"
+								{% if theme.settings.get("enable_autoplay") %}
+								slider-config='{
+									"autoplay": {
+										"delay": 3000,
+										"disableOnInteraction": false
+									}
+								}'
+								{% endif %}
+                                thumbs-config='{
+                                    "spaceBetween": 8,
+                                    "slidesPerView": 4,
+									
+                                    "breakpoints": {
+                                        "640": {
+                                            "slidesPerView": 6
+                                        },
+                                        "1024": {
+                                            "slidesPerView": 5,
+                                            "direction": "vertical",
+                                            "vertical": {
+                                                "enabled": true
+                                            }	
+                                        }
+                                    }
+                                }' 
+                                listen-to-thumbnails-option="true" 
+                                show-controls="false" 
+                                show-thumbs-controls="false">
+
+
+                            {# Calories Badge #}
+                            {% if product.calories %}
+                                <div class="absolute z-[2] top-4 rtl:left-4 ltr:right-4 bg-background shadow-sm flex flex-col justify-center items-center rounded-full w-20 h-20 lg:w-24 lg:h-24">
+                                    <span class="text-red-500 text-xl leading-none font-bold">{{ product.calories }}</span>
+                                    <span class="text-xs text-gray-500">{{ trans('pages.products.calories') }}</span>
+                                </div>
+                            {% endif %}
+
+                            <div slot="items">
+                                {% for image in product.images %}
+                                    {% if image.three_d_image_url %}
+                                        <model-viewer style="min-height: 500px;" class="swiper-slide model-entry w-full h-full" loading="eager" camera-controls touch-action="pan-y" auto-rotate poster="{{ image.url }}" src="{{ image.three_d_image_url }}" shadow-intensity="1" alt="{{ image.alt }}"></model-viewer>
+                                    {% else %}
+                                        <a data-fslightbox="product_{{ product.id }}" data-img-id="{{ image.id }}" data-slid-index="{{ loop.index-1 }}" {% if image.video_url %} data-video-src="{{ image.video_url }}" {% endif %} data-caption="{{ image.alt }}" data-infinite="false" data-type="{{ image.video_url?'youtube':'image' }}" href="{{ (image.video_url is iterable ? image.video_url|first : image.video_url)|default(image.url) }}" aria-label="{{ product.name }}" 
+                                            class=" img_items swiper-slide magnify-wrapper homeslider__slide  {{ image.video_url?'video-entry':'' }}  rounded-3xl">
+                                            {% if loop.first %}
+                                                <img id="{{image.id}}" fetchpriority="high" loading="eager" src="{{ image.url }}" alt="{{ image.alt }}" class="w-full h-full  object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
+                                            {% else %}
+                                                <img id="{{image.id}}" src="{{ 'images/s-empty.png' | cdn }}" data-src="{{ image.url }}" alt="{{ image.alt }}" class="w-full lazy h-full  object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
+                                            {% endif %}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            {% if has_many_images %}
+                                <div slot="thumbs">
+                                    {% for image in product.images %}
+                                        <div class="slide--one-fourth {{ image.video_url?'video-entry':'' }} {{ image.three_d_image_url?'model-entry':'' }}" data-caption="{{ image.alt }}">
+                                            {% if loop.index == 1 %}
+                                                <img src="{{ image.url }}" loading="eager" class="object-cover w-full h-full bg-gray-100 overflow-hidden" title="{{ image.alt }}" alt="{{ image.alt }}"/>
+                                            {% else %}
+                                                <img data-src="{{ image.url }}" src="{{ 'images/s-empty.png' | cdn }}" class="object-cover w-full h-full lazy bg-gray-100  overflow-hidden" title="{{ image.alt }}" alt="{{ image.alt }}"/>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </salla-slider>
+                    {% endif %}
+		</div>
+		
+		 <div class="main-content lg:sticky  w-full lg:w-[34%] lg:pb-16 px-4 lg:px-0 top-8 ">
+          
+            {# Wishlist Button #}
+			{% hook 'product:single.description.start' %}
+				{# tittle && brand #}
+				<nav class="breadcrumbs w-full lg:block hidden">
+				<salla-breadcrumb></salla-breadcrumb>
+			</nav>
+                {% if product.brand.name %}
+						<div class="product-brand mb-5 w-12">
+							<a class="brand-logo" href="{{ product.brand.url }}" title="{{ product.brand.name }}">
+								<img width="100%" height="100%" class="max-h-full object-contain" src="{{ product.brand.logo }}" title="{{ product.brand.name }}" alt="{{ product.brand.name }}">
+							</a>
+						</div>
+					{% endif %}
+				<div class="flex align-center justify-between items-center w-full mb-2">
+                    <h1 class="text-xl lg:text-[24px] leading-10 font-bold  text-font-color">
+                        {{ product.name }}
+                    </h1>
+                        <div class="hidden lg:flex items-center ">
+                                <salla-social-share class="inline-flex" aria-label="social share"></salla-social-share>
+
+                                <salla-button
+                                    shape="icon"
+                                    fill="outline"
+                                    color="light"
+                                    name="product-name-{{ product.id }}"
+                                    aria-label="{% if product.in_wishlist %}Remove from wishlist{% else %}Add to wishlist{% endif %}"
+                                    class="btn--wishlist s-product-card-wishlist-btn !text-primary animated {% if product.in_wishlist %}is-added{% else %}not-added{% endif %}"
+                                    onclick="salla.wishlist.toggle({{ product.id }})"
+                                    data-id="{{ product.id }}">
+            
+                                    <span class="relative">
+                                        <!-- Filled Heart -->
+                                        <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z"/>
+                                        </svg>
+            
+                                        <!-- Empty Heart -->
+                                        <svg class="not_filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M442.9 144C415.6 144 389.9 157.1 373.9 179.2L339.5 226.8C335 233 327.8 236.7 320.1 236.7C312.4 236.7 305.2 233 300.7 226.8L266.3 179.2C250.3 157.1 224.6 144 197.3 144C150.3 144 112.2 182.1 112.2 229.1C112.2 279 144.2 327.5 180.3 371.4C221.4 421.4 271.7 465.4 306.2 491.7C309.4 494.1 314.1 495.9 320.2 495.9C326.3 495.9 331 494.1 334.2 491.7C368.7 465.4 419 421.3 460.1 371.4C496.3 327.5 528.2 279 528.2 229.1C528.2 182.1 490.1 144 443.1 144zM335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1C576 297.7 533.1 358 496.9 401.9C452.8 455.5 399.6 502 363.1 529.8C350.8 539.2 335.6 543.9 320 543.9C304.4 543.9 289.2 539.2 276.9 529.8C240.4 502 187.2 455.5 143.1 402C106.9 358.1 64 297.7 64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1L320 171.8L335 151.1z"/>
+                                        </svg>
+                                    </span>
+                                </salla-button>
+                        </div>
+
+					
+				</div>
+				{% if product.rating or product.is_taxable %}
+					<div class="flex items-center justify-between mb-2">
+						{# rating #}
+						{% if product.rating %}
+							<salla-rating-stars size="small" value="{{ product.rating.stars }}" reviews="{{ product.rating.count }}"></salla-rating-stars>
+						{% endif %}
+
+						{# tax #}
+						{% if product.is_taxable %}
+							<small class="color-grey underline font-bold">{{ trans('pages.products.tax_included') }}</small>
+						{% endif %}
+					</div>
+				{% endif %}
+				{# subtitle #}
+				{% if product.subtitle %}
+					<h2 class="product-entry__sub-title text-[14px] lg:text-xl font-normal text-font-color opacity-[0.957] leading-6 mb-2 lg:mb-4">
+						{{ product.subtitle }}
+					</h2>
+				{% endif %}
+				
+
+				<div class="flex items-center justify-between pb-2 border-b border-[#E4E4E7] mb-4 ">
+					<div class="flex whitespace-nowrap gap-4 items-center">
+						<div class="{{ product.is_on_sale ? '' : 'hidden' }} space-x-2 rtl:space-x-reverse whitespace-nowrap">
+							<h4 class="text-primary font-bold text-2xl inline-block">{{product.sale_price|money}}</h4>
+							<span class="text-[#9F9FA9] text-xl line-through">{{product.regular_price|money}}</span>
+						</div>
+
+						<div class="gap-4 {{ product.is_on_sale ? 'hidden' : 'flex' }}">
+							{% if product.starting_price %}
+								<span class="">{{ trans('pages.products.starting_price') }}</span>
+							{% endif %}
+							<h2 class="font-bold text-xl lg:text-[28px] inline-block text-primary">
+								{{product.starting_price ? product.starting_price|money : product.price|money }}
+							</h2>
+						</div>
+					</div>
+				</div>
+				
+				{# sale & countdown #}
+				{# {% if product.is_on_sale %}
+					{% if product.sale_end %}
+						<div class="sale_end flex items-center {{ product.sale_end ? "justify-between" : "justify-center" }} border border-font-color	 mt-4  px-4 ">
+								<div class="flex items-center gap-2 text-font-color">
+									<i class="text-xl {{ theme.settings.get('offer_icon') }}"></i>
+									<p class="font-normal lg:text-lg text-sm text-font-color">
+										{{ theme.settings.get('offer_text') }}
+									</p>
+								</div>
+								
+								{# countdown 
+								<div id="countdown" class="countdown-px-4 lg:px-14 pt-3 pb-[7px]" dir="{{ theme.is_rtl ? 'rtl' : 'ltr' }}">
+									<salla-count-down
+									style="font-size: 24px;"
+									boxed=true
+									digits="en"
+									size="md"
+									date="{{product.sale_end}}"
+									labeled="true"
+									>
+								</salla-count-down>
+							</div>
+						</div>
+					{% endif %}
+				{% endif %} #}
+
+				{# feature #}
+				
+
+				{# tags #}
+				{% if product.tags|length and theme.settings.get('show_tags', true) %}
+					<div class="mb-3">
+						{% for tag in product.tags %}
+							<a href="{{ tag.url }}" class="rtl:ml-2 ltr:mr-2 inline-flex text-gray-500 hover:text-primary underline text-sm mb-1">
+								{{ tag.name }}
+							</a>
+						{% endfor %}
+					</div>
+				{% endif %}
+
+				{% if product.sold_quantity or product.can_show_remained_quantity %}
+					<div class="mb-5 rounded-md inline-flex text-sm">
+						{% if product.sold_quantity %}
+							<div class="px-4 !text-red-800">
+								<i class="sicon-fire rtl:ml-1.5 ltr:mr-1.5"></i>
+								{{ trans('pages.products.sold') }}
+								<span>{{ pluralize('pages.products.sold_times', product.sold_quantity)|raw }}</span>
+							</div>
+						{% endif %}
+						{% if product.can_show_remained_quantity %}
+							<div class="px-4 rtl:even:border-r ltr:even:border-l even:border-gray-200">
+								<i class="!text-red-800 sicon-box-bankers rtl:ml-1.5 ltr:mr-1.5"></i>
+								{{ trans('pages.products.remained') }}
+								<span>{{ product.quantity }}</span>
+							</div>
+						{% endif %}
+					</div>
+				{% endif %}
+
+				{% if product.sku %}
+					<div class="mb-4 flex justify-between sm:grid sm:grid-cols-3 rounded-md">
+						<div class=" items-center hidden">
+							<i class="sicon-barcode mx-1"></i>
+							{{ trans('pages.products.sku') }}
+						</div>
+						<div class="text-unicode hidden">{{ product.sku }}</div>
+					</div>
+				{% endif %}
+			{% hook 'product:single.description' %}
+
+			{# Installment Methods #}
+			<salla-installment price="{{ product.price }}"></salla-installment>
+			
+
+			{% if product.show_availability %}
+				<section class="bg-background p-5 rounded-md mb-5 last:mb-0">
+					<div class="center-between">
+						<label class="flex items-center text-base">
+							<span class="sicon-location rtl:ml-1 ltr:mr-1"></span>
+							<span class="inline-block">{{ trans('pages.products.availability') }}</span>
+						</label>
+						<div class="mt-1 sm:mt-0 sm:col-span-2 text-end">
+							<div class="flex rtl:space-x-reverse space-x-3">
+								<a href="#!" onclick="salla.event.dispatch('scopes::open', {mode: 'availability', product_id: '{{ product.id }}' })" class="group text-primary flex items-center justify-center">
+									<span>{{ trans('pages.products.select_branch') }}</span>
+									<span class="sicon-keyboard_arrow_left mr-2 transition-all group-hover:-translate-x-1"></span>
+								</a>
+							</div>
+						</div>
+					</div>
+				</section>
+			{% endif %}
+
+			<form class="form product-form" enctype="multipart/form-data" method="post" onsubmit="return salla.form.onSubmit('cart.addItem', event)">
+				<input type="hidden" name="id" value="{{ product.id }}">
+				{% hook 'product:single.form.start' %}
+				{% include 'pages.partials.product.options' %}
+				{% hook 'product:single.form.end' %}
+				
+				<section class="rounded-md rounded-b-none bg-background sticky-product-bar ">
+					<section class="flex rounded-md rounded-b-none">
+						{# total price#}
+						<div class="center-between w-full">
+							<label class="form-label">
+								<b class="block !text-font-color">
+									{{ trans('pages.products.price') }}
+								</b>
+							</label>
+
+							<div class="flex whitespace-nowrap price-wrapper gap-4 items-center">
+								<div class="{{ product.is_on_sale ? '' : 'hidden' }} price_is_on_sale space-x-2 rtl:space-x-reverse whitespace-nowrap">
+									<h2 class="total-price text-primary font-bold text-2xl inline-block">{{product.sale_price|money}}</h2>
+									<span class="before-price text-[#9F9FA9] text-xl line-through">{{product.regular_price|money}}</span>
+								</div>
+								
+								<div class="starting-or-normal-price gap-4 {{ product.is_on_sale ? 'hidden' : 'flex' }}">
+									{% if product.starting_price %}
+										<span class="starting-price-title">{{ trans('pages.products.starting_price') }}</span>
+									{% endif %}
+									<h2 class="total-price font-bold text-xl inline-block text-primary">
+										{{product.starting_price ? product.starting_price|money : product.price|money }}
+									</h2>
+								</div>
+							</div>
+
+							<div class="out-of-stock min-h-7 leading-7 hidden text-base  font-bold">{{ trans('pages.products.out_of_stock')}}</div>
+						</div>
+					</section>
+
+					{# Add to cart #}
+					<div class="w-full flex flex-row-reverse mt-3 gap-3 justify-center">
+                        <div>
+						{# Quantity #}
+						{% if product.is_hidden_quantity or product.type == 'booking' %}
+							<input type="hidden" value="1" name="quantity" aria-label="Quantity"/>
+						{% else %}
+							<div class="sticky-product-bar__quantity ">
+								<salla-quantity-input max="{{ product.max_quantity }}" value="1" name="quantity" aria-label="Quantity" class="border-gray-200 flex justify-end"></salla-quantity-input>
+							</div>
+						{% endif %}
+					</div>
+						<salla-add-product-button  width="wide" {{theme.settings.get('sticky_add_to_cart') ? ' support-sticky-bar' : ''}} 
+						{{product.is_require_shipping ? 'required-shipping' : ''}} amount="{{ product.base_currency_price }}" class="sticky-product-bar__btn" product-status="{{ product.status }}" product-type="{{ product.type }}" product-id="{{ product.id }}" loader-position="end" type="submit" width="wide" {# Notify availability props#} 
+						{% if product.notify_availability %} {{ product.notify_availability.subscribed ? 'is-subscribed' : '' }} channels="{{ product.notify_availability.channels|join(',') }}" subscribed-options="{{ product.notify_availability.subscribed_options|json_encode }}" 
+							{{ product.notify_availability.options ? 'notify-options-availability' : '' }} {% endif %}>
+							<div class="flex items-center justify-center gap-1">
+								<span class="font-medium !text-base flex gap-2">
+									{{ product.add_to_cart_label }} 
+									<div class="flex sm:hidden">
+
+										(
+											<div class="flex whitespace-nowrap gap-4 items-center sm:hidden">
+												<div class="{{ product.is_on_sale ? '' : 'hidden' }} space-x-2 rtl:space-x-reverse whitespace-nowrap flex">
+													<h4 class="font-medium text-sm leading-5 tracking-wide text-center text-background">{{product.sale_price|money}}</h4>
+													<span class="font-medium text-sm leading-5 tracking-wide text-center text-background line-through">{{product.regular_price|money}}</span>
+												</div>
+												
+												<div class="gap-4 {{ product.is_on_sale ? 'hidden' : 'flex' }}">
+													{% if product.starting_price %}
+													<span class="">{{ trans('pages.products.starting_price') }}</span>
+													{% endif %}
+													<h2 class="font-medium text-sm leading-5 tracking-wide text-center text-background">
+														{{product.starting_price ? product.starting_price|money : product.price|money }}
+													</h2>
+												</div>
+											</div>
+											)
+										</div>
+								</span>
+							</div>
+						</salla-add-product-button>
+						
+					</div>
+					{% if theme.settings.get('checkout_enable') %}
+					{% if product.status == "sale" %}
+					<div class="buy_now">
+						<salla-add-product-button quick-buy {{theme.settings.get('sticky_add_to_cart') ? ' support-sticky-bar' : ''}} 
+						{{product.is_require_shipping ? 'required-shipping' : ''}} amount="{{ product.base_currency_price }}" class="sticky-product-bar__btn" product-status="{{ product.status }}" product-type="{{ product.type }}" product-id="{{ product.id }}" loader-position="end" type="submit" width="wide" {# Notify availability props#} 
+						{% if product.notify_availability %} {{ product.notify_availability.subscribed ? 'is-subscribed' : '' }} channels="{{ product.notify_availability.channels|join(',') }}" subscribed-options="{{ product.notify_availability.subscribed_options|json_encode }}" 
+						{{ product.notify_availability.options ? 'notify-options-availability' : '' }} {% endif %}>
+						<div class="flex items-center justify-center gap-1">
+							<span class="font-medium !text-base">
+								{{ product.add_to_cart_label }}
+							</span>
+						</div>
+					</salla-add-product-button>
+				</div>
+				{% endif %}
+				{% endif %}
+				</section>
+				<div class="lg:hidden flex items-center mobile_buttons">
+                                <salla-social-share class="inline-flex" aria-label="social share"></salla-social-share>
+
+                                <salla-button
+                                    {# shape="icon" #}
+									width="wide"
+                                    fill="outline"
+                                    color="light"
+                                    name="product-name-{{ product.id }}"
+                                    aria-label="{% if product.in_wishlist %}Remove from wishlist{% else %}Add to wishlist{% endif %}"
+                                    class="btn--wishlist s-product-card-wishlist-btn !text-primary animated {% if product.in_wishlist %}is-added{% else %}not-added{% endif %}"
+                                    onclick="salla.wishlist.toggle({{ product.id }})"
+                                    data-id="{{ product.id }}">
+            
+                                    <span class="relative flex items-center justify-center gap-2">
+                                        <!-- Filled Heart -->
+                                        <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z"/>
+                                        </svg>
+            
+                                        <!-- Empty Heart -->
+                                        <svg class="not_filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M442.9 144C415.6 144 389.9 157.1 373.9 179.2L339.5 226.8C335 233 327.8 236.7 320.1 236.7C312.4 236.7 305.2 233 300.7 226.8L266.3 179.2C250.3 157.1 224.6 144 197.3 144C150.3 144 112.2 182.1 112.2 229.1C112.2 279 144.2 327.5 180.3 371.4C221.4 421.4 271.7 465.4 306.2 491.7C309.4 494.1 314.1 495.9 320.2 495.9C326.3 495.9 331 494.1 334.2 491.7C368.7 465.4 419 421.3 460.1 371.4C496.3 327.5 528.2 279 528.2 229.1C528.2 182.1 490.1 144 443.1 144zM335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1C576 297.7 533.1 358 496.9 401.9C452.8 455.5 399.6 502 363.1 529.8C350.8 539.2 335.6 543.9 320 543.9C304.4 543.9 289.2 539.2 276.9 529.8C240.4 502 187.2 455.5 143.1 402C106.9 358.1 64 297.7 64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1L320 171.8L335 151.1z"/>
+                                        </svg>
+										<span>{{trans('pages.single.WISHLIST')}}</span>
+                                    </span>
+                                </salla-button>
+                        </div>
+
+				{% if product.is_giftable %}
+					<salla-gifting class="mt-5" widget-subtitle="{{ gifting_intro }}" product-id="{{ product.id }}" {{ product.is_require_shipping ? 'physical-products' : '' }}></salla-gifting>
+				{% endif %}
+			</form>
+
+			{% hook 'product:single.description.end' %}
+			<salla-quick-order class="mt-5 lg:-mb-2 block"></salla-quick-order>
+			<div class="mt-5">
+                        <salla-payments></salla-payments>
+                    </div>
+
+     {# get the selected view type (horizontal | vertical) #}
+      {% set view_type = theme.settings.get('selling-points-view')|default('horizontal') %}
+      {% set selling_points = theme.settings.get('selling-points') %}
+
+      {% if selling_points and selling_points|length > 0 %}
+      {# mobile view #}
+      <div class=" lg:hidden flex flex-col items-start gap-6 py-6 self-stretch">
+        {% for point in selling_points %}
+        <div class="flex items-center gap-4 self-stretch  flex-row">
+
+          {# image #}
+          {% if point['selling-point-image'] %}
+          <img src="{{ point['selling-point-image'] }}"
+            alt="{% if language.iso_code == 'ar' %}{{ point['selling-point-title']['ar']|default('') }}{% else %}{{ point['selling-point-title']['en']|default('') }}{% endif %}"
+            class="w-8 h-8 aspect-square" />
+          {% endif %}
+
+          {# title + description + link #}
+          <div class="flex flex-col items-start flex-1">
+
+            {# title #}
+            {% if point['selling-point-title'] %}
+            <span class="text-sm font-semibold leading-5 tracking-normal self-stretch">
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-title']['ar']|default('') }}
+              {% else %}
+              {{ point['selling-point-title']['en']|default('') }}
+              {% endif %}
+            </span>
+            {% endif %}
+
+            {# description & link #}
+
+            <p class="text-xs font-medium leading-4 tracking-normal self-stretch">
+              {% if point['selling-point-description'] %}
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-description']['ar']|default('') }}
+              {% else %}
+              {{ point['selling-point-description']['en']|default('') }}
+              {% endif %}
+              {% endif %}
+              {# link (if exists) #}
+              {% if point['selling-point-link'] is not empty %}
+              <a href="{{ point['selling-point-link'] }}"
+                class="text-xs font-medium leading-4 underline underline-offset-2">
+                {% if language.iso_code == 'ar' %}
+                {{ point['selling-point-link-content']['ar']|default('المزيد') }}
+                {% else %}
+                {{ point['selling-point-link-content']['en']|default('Learn more') }}
+                {% endif %}
+              </a>
+              {% endif %}
+            </p>
+
+
+
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {# Horizontal View #}
+      {% if view_type == 'horizontal' %}
+      <div class="hidden lg:flex py-6 items-start gap-4 flex-row w-full">
+        {% for point in selling_points %}
+        <div class="flex flex-col items-center text-center gap-2 px-2 flex-1 min-w-[150px]">
+
+          {# image fixed at top #}
+          {% if point['selling-point-image'] %}
+          <div class="flex-shrink-0">
+            <img src="{{ point['selling-point-image'] }}"
+              alt="{% if language.iso_code == 'ar' %}{{ point['selling-point-title']['ar']|default('') }}{% else %}{{ point['selling-point-title']['en']|default('') }}{% endif %}"
+              class="w-8 h-8 aspect-square" />
+          </div>
+          {% endif %}
+
+          {# text content below image #}
+          <div class="flex flex-col items-center gap-1 text-center flex-1">
+
+            {# title #}
+            {% if point['selling-point-title'] %}
+            <span class="text-sm font-semibold leading-5">
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-title']['ar']|default('') }}
+              {% else %}
+              {{ point['selling-point-title']['en']|default('') }}
+              {% endif %}
+            </span>
+            {% endif %}
+
+            {# description #}
+            {% if point['selling-point-description'] %}
+            <p class="text-xs font-medium leading-4">
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-description']['ar']|default('') }}
+              {% else %}
+              {{ point['selling-point-description']['en']|default('') }}
+              {% endif %}
+            </p>
+            {% endif %}
+
+            {# link (if exists) #}
+            {% if point['selling-point-link'] is not empty %}
+            <a href="{{ point['selling-point-link'] }}"
+              class="text-xs font-medium leading-4 underline underline-offset-2">
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-link-content']['ar']|default('المزيد') }}
+              {% else %}
+              {{ point['selling-point-link-content']['en']|default('Learn more') }}
+              {% endif %}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+
+      {# Vertical View #}
+      {% if view_type == 'vertical' %}
+      <div class="hidden lg:flex flex-col items-start gap-6 py-6 self-stretch">
+        {% for point in selling_points %}
+        <div class="flex items-center gap-4 self-stretch  flex-row">
+
+          {# image #}
+          {% if point['selling-point-image'] %}
+          <img src="{{ point['selling-point-image'] }}"
+            alt="{% if language.iso_code == 'ar' %}{{ point['selling-point-title']['ar']|default('') }}{% else %}{{ point['selling-point-title']['en']|default('') }}{% endif %}"
+            class="w-8 h-8 aspect-square" />
+          {% endif %}
+
+          {# title + description + link #}
+          <div class="flex flex-col items-start flex-1">
+
+            {# title #}
+            {% if point['selling-point-title'] %}
+            <span class="text-sm font-semibold leading-5 tracking-normal self-stretch">
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-title']['ar']|default('') }}
+              {% else %}
+              {{ point['selling-point-title']['en']|default('') }}
+              {% endif %}
+            </span>
+            {% endif %}
+
+            {# description & link #}
+
+            <p class="text-xs font-medium leading-4 tracking-normal self-stretch">
+              {% if point['selling-point-description'] %}
+              {% if language.iso_code == 'ar' %}
+              {{ point['selling-point-description']['ar']|default('') }}
+              {% else %}
+              {{ point['selling-point-description']['en']|default('') }}
+              {% endif %}
+              {% endif %}
+              {# link (if exists) #}
+              {% if point['selling-point-link'] is not empty %}
+              <a href="{{ point['selling-point-link'] }}"
+                class="text-xs font-medium leading-4 underline underline-offset-2">
+                {% if language.iso_code == 'ar' %}
+                {{ point['selling-point-link-content']['ar']|default('المزيد') }}
+                {% else %}
+                {{ point['selling-point-link-content']['en']|default('Learn more') }}
+                {% endif %}
+              </a>
+              {% endif %}
+            </p>
+
+
+
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% endif %}
+
+
+
+
+
+		 {% if theme.settings.get('single_side_products') %}
+		 {% set raw_side_source = theme.settings.get('single_side_source') %}
+
+{% set source_side =
+  raw_side_source == 'categories' ? 'categories' :
+  raw_side_source == 'selected'   ? 'selected' :
+  raw_side_source == 'latest'     ? 'latest' :
+  raw_side_source == 'sales'      ? 'offers' :
+  'latest'
+%}
+
+{% set source_side_value =
+  raw_side_source == 'categories'
+    ? theme.settings.get('categories_side_single')
+    : (raw_side_source == 'selected'
+        ? theme.settings.get('products_side_single')
+        : [])
+%}
+		<div class="side_products pt-4 border-t border-t-[color-mix(in_srgb,var(--color-primary)15%,white)]">
+		<div class="w-full flex flex-col justify-center items-start text-center">
+			<span class=" flex items-center gap-2 overflow-hidden pb-4">
+				<h1 class="font-semibold text-base leading-6 tracking-normal">
+				{{ trans('pages.single.selected') }}
+				</h1>
+			</span>
+		</div>
+		<div class="products-fixed-slider-{{position}} relative">
+			<salla-products-list
+				id="selected-products-slider-{{position}}"
+				type="carousel"
+				class="product-slider"
+                source="{{ source_side }}"
+				{% if raw_side_source in ['selected', 'categories'] and source_side_value.value is defined and source_side_value.value|length > 0 %}
+					source-value="[{{ source_side_value.value | join(',') }}]"
+				{% endif %}
+
+                limit="4"
+				display-all-url="{{ display_all_url }}"
+				slider-id="slider-with-{{ position }}">
+			</salla-products-list>
+		</div>
+	</div>
+	{% endif %}
+		<div class="feature flex items-start justify-between gap-[18px] flex-col pt-3 lg:pt-8">
+					{% if product.has_metadata %}
+						<div class="flex items-center justify-start gap-2 w-full">
+							<salla-metadata class="w-full"></salla-metadata>
+						</div>
+					{% endif %}
+				</div>
+		</div>
+	</div>
+	<div class="px-4 md:px-14 ">
+
+	<salla-tabs>
+                <!-- Tab One -->
+                <salla-tab-header slot="header" name="tab_one"
+                    ><span>
+			{{trans ("pages.single.discription")}}
+		</span></salla-tab-header
+                >
+                <salla-tab-content slot="content" name="tab_one">
+                  <div class="product__description leading-7 mb-3 text-font-color">
+					<p class="flex font-semibold text-base leading-6 tracking-normal text-center lg:text-xl lg:leading-9">
+						{{trans ("pages.single.discription")}}
+					</p>
+			{% set product_desc = product.description|replace({"&nbsp;":"\n"}) %}
+			{% if product.has_read_more %}
+
+				<article class="article article--main relative 
+				font-normal text-sm leading-5 tracking-wide 
+       lg:font-medium lg:text-base lg:leading-6 lg:tracking-normal
+				overflow-hidden transition-all max-h-0 duration-300 py-4" id="more-content" style="max-height:5.25rem">
+					{{ product_desc|raw }}
+				</article>
+
+				{# Read More Button #}
+				<a id="btn-show-more" class="link--primary inline-block mt-2 cursor-pointer">
+					{{ trans('pages.products.read_more') }}
+				</a>
+			{% else %}
+				<article class="article--main pb-1 font-normal text-sm leading-5 tracking-wide 
+       lg:font-medium lg:text-base lg:leading-6 lg:tracking-normal">
+					{{ product_desc|raw }}
+				</article>
+			{% endif %}
+		</div>
+                </salla-tab-content>
+                <!-- Tab Two -->
+                 {# {% if store.settings.rating.show_on_product and user.type == 'user' %} #}
+                <salla-tab-header slot="header" name="tab_two"><span>{{ trans('common.rating') }}</span></salla-tab-header>
+                <salla-tab-content slot="content" name="tab_two">
+               	{# Comments Area #}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2  single">
+        {#
+        Hook: product.single.before_customer_reviews
+        Fires before the customer reviews/comments section.
+        Use this hook to inject content between the product info and the reviews block.
+    #}
+    <div class="s-blocks-wrapper s-before-reviews">{% hook 'product.single.before_customer_reviews' %}</div>
+    <div class=" order-2 lg:order-1 comments {{ user.type == 'user' ? 'lg:col-span-2' : 'lg:col-span-3' }}">
+        <salla-comments item-id="{{product.id}}" type="product"></salla-comments>
+    </div>
+     <div class="col-span-1 order-1 lg:order-2 comment-form">
+                     {# <salla-rating-stars
+                      value="{{ product.rating.stars ?? 0 }}"
+                      reviews="{{ product.rating.count ?? 0 }}">
+                      </salla-rating-stars> #}
+                      {# {% if product.rating.count == 0 %}
+                      <div class="text-center mb">({{ trans('pages.single.no') }})</div>
+                      {% endif %} #}
+                      <div class="mt-4 lg:mt-5">
+                          <salla-comment-form></salla-comment-form>
+                    </div>
+                 </div>
+    </div>
+                </salla-tab-content>
+                 {# {% endif %}   #}
+    </salla-tabs>
+	</div>
+
+	<salla-offer></salla-offer>
+
+{% if theme.settings.get("single_products") %}
+
+    {#
+        Hook: product.single.before_product_recommendations
+        Fires before the similar/related products slider.
+        Use this hook to inject content between the reviews and the recommendations section.
+    #}
+    <div class="s-blocks-wrapper s-before-related">{% hook 'product.single.before_product_recommendations' %}</div>
+
+	{# Similar Products Area #}
+	<div class="single-product-slider rtl:mr-5 ltr:ml-5 lg:rtl:mr-10 lg:ltr:ml-10 overflow-x-hidden my-6">
+		<div class="w-full flex flex-col justify-start items-start text-start pb-3">
+			<span class=" flex items-center gap-2 overflow-hidden pb-4">
+				<h1 class="text-[clamp(1.375rem,1.1216rem+1.0811vw,2rem)] font-medium leading-[28px] text-font">
+				{{ trans('pages.single.similar') }}
+				</h1>
+			</span>
+		</div>
+		<div class="products-fixed-slider-{{position}} relative">
+			{% set raw_source = theme.settings.get('single_source') %}
+
+{% set source =
+  raw_source == 'categories' ? 'categories' :
+  raw_source == 'selected'   ? 'selected' :
+  raw_source == 'latest'     ? 'latest-products' :
+  raw_source == 'sales'      ? 'best-selling' :
+  'latest-products'
+%}
+
+{% set source_value =
+  raw_source == 'categories'
+    ? theme.settings.get('categories_single')
+    : (raw_source == 'selected'
+        ? theme.settings.get('products_single')
+        : [])
+%}
+
+<salla-products-slider
+  source="{{ source }}"
+  slider-config='{
+				"slidesPerView": 1.5,
+				"spaceBetween": 12	,
+				"speed": 1000,
+				"effect": "slide",
+				"autoplay": {
+                    "delay": 3000,
+                    "disableOnInteraction": false,
+                    "pauseOnMouseEnter": true
+                    },
+				"breakpoints": {
+					"551": { "slidesPerView": 2.2, "spaceBetween": 12 },
+					"786": { "slidesPerView": 3, "spaceBetween": 12 },
+					"1024": { "slidesPerView": 4.75, "spaceBetween": 12 }
+				}     
+				}'
+  {% if raw_source in ['selected', 'categories'] and source_value.value is defined and source_value.value|length > 0 %}
+    source-value="[{{ source_value.value | join(',') }}]"
+  {% endif %}
+  display-all-url
+>
+</salla-products-slider>
+		</div>
+	</div>
+  {#
+        Hook: product.single.after_product_recommendations
+        Fires after the similar/related products slider, at the very end of the product page content.
+        Use this hook to append content below the recommendations section.
+    #}
+    <div class="s-blocks-wrapper s-after-related">{% hook 'product.single.after_product_recommendations' %}</div>
+    
+	{% endif %}
+	{% set images = theme.settings.get('image_collection') %}
+
+{% if images is not empty and theme.settings.get('img_in_single') %}
+    <div class="product-image-gallery  gap-4 ltr:pl-4 rtl:pr-4 lg:!px-16 py-6  md:py-14 bg-[#e9e9e9] overflow-x-hidden"
+	{% if theme.settings.get('bg_color') %}  style="background-color: {{theme.settings.get('bg_color_gellary') }};" {% endif %}
+	
+	>
+		<h2 class="text-[clamp(1.375rem,1.1216rem+1.0811vw,2rem)] pb-4 font-medium leading-[28px] text-font">{{ trans('pages.single.inspire') }}</h2>
+        <salla-slider
+            id="product-gallery-{{ product.id }}"
+            type="carousel"
+            class="product-slider"
+            slider-config='{
+              "slidesPerView": 1.5,
+				"spaceBetween": 8	,
+				"speed": 1000,
+				"effect": "slide",
+				"autoplay": {
+                    "delay": 3000,
+                    "disableOnInteraction": false,
+                    "pauseOnMouseEnter": true
+                    },
+				"breakpoints": {
+					"551": { "slidesPerView": 2, "spaceBetween": 8 },
+					"786": { "slidesPerView": 3, "spaceBetween": 16 },
+					"1024": { "slidesPerView": 5, "spaceBetween": 16 }
+				}     
+				}'
+            slider-id="slider-with-lightbox-{{ product.id }}">
+            <div slot="items">
+                {% for image_item in images %}
+                    {% if image_item['img_single'] is defined and image_item['img_single'] %}
+                        <div class="gallery-item !h-[330px] lg:!h-[374px]">
+                            <img src="{{ image_item['img_single'] }}" loading="eager" alt="{{ product.name }}" class="w-full h-full  object-cover">
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </salla-slider>
+    </div>
+
+{% endif %}
+{# ==================== Sticky Bottom Bar  ==================== #}
+			{% include "pages.partials.product.sticky_bar" with {
+                    product: product,
+                    store: store,
+                    theme: theme
+                } %}
+
+
+
+	{% if is_page('index') %}
+
+<style>
+    .s-product-card-content-category {
+        display: block !important;
+    }
+</style>
+{% else %}
+
+<style>
+    .s-product-card-content-category {
+        display: none !important;
+    }
+
+	
+</style>
+{% endif %} 
+
+{% endblock %}
+
+{% block scripts %}
+	<script defer src="{{ 'product.js' | asset }}"></script>
+	<script>
+	window.status_product={{product.status|json_encode|raw}};
+	window.product_category_id = {{ product.category.id | json_encode | raw }};
+	</script>
+	<script>
+(function () {
+  const metadata = document.querySelector("salla-metadata");
+
+  if (!metadata) {
+    console.error(" <salla-metadata> not found!");
+    return;
+  }
+
+  function initFaqAccordion() {
+
+    const rows = metadata.querySelectorAll(".s-metadata-row");
+
+    if (!rows.length) {
+      console.warn(" No FAQ rows inside <salla-metadata>");
+      return;
+    }
+
+    rows.forEach((row) => {
+      const title = row.querySelector(".s-metadata-row-name");
+      const value = row.querySelector(".s-metadata-row-value");
+
+      if (!title || !value) return;
+
+      // Prevent duplicate listeners
+      if (title.dataset.bound) return;
+      title.dataset.bound = "true";
+
+
+      title.addEventListener("click", () => {
+        
+
+        if (row.classList.contains("open")) {
+          value.style.maxHeight = value.scrollHeight + "px";
+
+          requestAnimationFrame(() => {
+            value.style.maxHeight = "0";
+          });
+
+          row.classList.remove("open");
+          value.classList.remove("open");
+
+        } else {
+          value.style.maxHeight = value.scrollHeight + "px";
+
+          row.classList.add("open");
+          value.classList.add("open");
+
+          value.addEventListener(
+            "transitionend",
+            () => {
+              if (row.classList.contains("open")) {
+                value.style.maxHeight = "none";
+              }
+            },
+            { once: true }
+          );
+        }
+      });
+    });
+  }
+
+  // Check if Salla component is already hydrated
+  if (metadata.classList.contains("hydrated")) {
+    initFaqAccordion();
+  } else {
+    console.log(" Waiting for hydration...");
+
+    const observer = new MutationObserver((mutations, obs) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class" &&
+          metadata.classList.contains("hydrated")
+        ) {
+          initFaqAccordion();
+          obs.disconnect();
+        }
+      });
+    });
+
+    observer.observe(metadata, { attributes: true });
+  }
+})();
+</script>
+	{% if product.has_3d_image %}
+		<script type="module" defer src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+	{% endif %}
+	
+{% endblock %}
+
+
+

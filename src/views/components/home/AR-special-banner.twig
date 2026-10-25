@@ -1,0 +1,99 @@
+<section class="Ar-special-banner Ar-special-banner-{{position}}">
+
+	<div class="flex flex-col md:flex-row w-full">
+		{% for item in  component.banner %}
+			<div class="banner-height md:w-1/2 w-full banner banner-{{loop.index}}  flex flex-col items-start justify-end relative md:py-6 py-4 px-4 overflow-hidden">
+				
+				{% if not item.button_text %}
+					<a class="w-full h-full absolute inset-0 z-[5]" href="{{item.url}}"></a>
+				{% endif %}
+
+				<div class="content-wrapper content-wrapper-{{loop.index}} text-start m-0 h-full flex flex-col items-start justify-end sm:gap-4 gap-2 relative z-2">
+					{% if item.block_title %}
+						<h1 class="blocktitle text-xl font-semibold text-background">{{item.block_title}}</h1>
+					{% endif %}
+					{% if item.subtext %}
+						<p class="subtext text-background font-light text-[clamp(0.875rem,0.7602rem+0.4898vw,1.25rem)] md:max-w-1/2">{{item.subtext}}</p>
+					{% endif %}
+					{% if item.button_text %}
+						<a class="block button button-{{loop.index}} rounded-md bg-primary text-background px-8 py-1 sm:py-2 text-[clamp(0.75rem,0.6447rem+0.4493vw,1.094rem)]
+								transition-colors duration-300 ease-in-out hover:bg-background hover:text-primary  border border-[color-mix(in srgb,var(--color-primary)15%,white)] hover:border-primary" href="{{item.url}}">{{item.button_text}}</a>
+					{% endif %}
+
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	<section>
+
+<style>
+
+.Ar-special-banner .banner-height {
+	height: 30rem;
+}
+
+@media (min-width: 768px) {
+	.Ar-special-banner .banner-height {
+		height: 43.75rem;
+	}
+}
+
+.Ar-special-banner .swiper-pagination-bullet{
+	margin:0px;
+	background:var(--color-background);
+	height:2px;
+	flex:1 1 0%;
+}
+
+
+{% for item in component.banner %}
+.Ar-special-banner-{{position}} .content-wrapper-{{loop.index}} .blocktitle{
+	color:{{item.blocktitle_color}};
+}
+.Ar-special-banner-{{position}} .content-wrapper-{{loop.index}} .subtext{
+	color:{{item.subtext_color}};
+}
+{% if item.transparent_button %}
+.Ar-special-banner-{{position}} .content-wrapper-{{loop.index}}  .button{
+	background-color: transparent;
+    color:{{item.button_text_color}};
+    border-color:{{item.button_text_color}};
+}
+.Ar-special-banner-{{position}} .content-wrapper-{{loop.index}}  .button:hover{
+	background-color:{{item.button_text_color}};
+    color:{{item.button_bg}};
+}
+{% else %}
+
+.Ar-special-banner-{{position}} .content-wrapper-{{loop.index}}  .button{
+	color:{{item.button_text_color}};
+	background-color:{{item.button_bg}};
+    border-color:{{item.button_text_color}};
+}
+.Ar-special-banner-{{position}} .content-wrapper-{{loop.index}}  .button:hover{
+	background-color:{{item.button_text_color}};
+	color:{{item.button_bg}};
+    border-color:{{item.button_bg}};
+}
+
+{% endif %}
+
+/* Mobile */
+{% if item.mobile_bg %}
+
+.Ar-special-banner-{{position}} .banner-{{loop.index}}  {
+    background: url({{item.mobile_bg}}) center center / cover no-repeat;
+}
+/* Desktop (default) */
+@media (min-width: 768px) {
+    .Ar-special-banner-{{position}} .banner-{{loop.index}}  {
+        background: url({{item.desktop_bg}}) center center / cover no-repeat;
+    }
+}
+{% else %}
+    .Ar-special-banner-{{position}} .banner-{{loop.index}}  {
+        background: url({{item.desktop_bg}}) center center / cover no-repeat;
+    }
+{% endif %}
+{% endfor %}
+</style>

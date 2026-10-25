@@ -1,0 +1,21 @@
+.AR-products {
+  .swiper-pagination-bullet-active {
+    @apply bg-primary;
+  }
+  .swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet,
+  .swiper-pagination-horizontal.swiper-pagination-bullets
+    .swiper-pagination-bullet {
+    @apply m-0 !important;
+  }
+  .swiper-button-disabled {
+    @apply border-primary;
+  }
+
+  .swiper-button-disabled i {
+    @apply text-primary;
+  }
+  .s-rating-stars-wrapper span,
+  .s-rating-stars-wrapper svg {
+    @apply w-4 h-4;
+  }
+}

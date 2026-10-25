@@ -1,0 +1,190 @@
+{% set source_type = component.source_type %}
+{% set source_value = source_type == 'categories' ? component.categories : (source_type == 'selected' ? component.products : []) %}
+<section class="Ar-products-banner Ar-products-banner-{{position}} ">
+	<div  class="grid lg:grid-cols-3 grid-cols-1 lg:px-4 py-8">
+
+
+			<div class="lg:col-span-2 lg:order-1 order-3 mx-auto lg:mx-0 self-center">
+				<div class="lg:block hidden features-products-head text text-font text-center md:mb-6 mb-4">
+
+
+					<h2 class="text-xl font-semibold pb-1" style="color: {{ component.block_title_color }};">
+						{{ component.block_title }}
+					</h2>
+					{% if component.url_text %}
+						<a href="{{component.url}}" class="underline font-normal text-graytext text-[clamp(0.875rem,0.7985rem+0.3265vw,1.125rem)]" style="color: {{ component.url_color }};">
+							{{ component.url_text }}
+						</a>
+					{% endif %}
+
+				</div>
+					<div class="relative xl:mx-28 lg:mx-10">
+					    <div class="gap-2 arrows flex items-center h-fit max-w-fit justify-between lg:hidden absolute -top-4 ltr:left-0 rtl:right-0 -translate-y-full z-2">
+							{# mobile arrows #}
+							<button class="{% if language.iso_code == "ar" %} salla-slider-prev {% else %} salla-slider-next{% endif %}  items-center justify-center border h-8 w-8 bg-white/50 rounded-full ltr:order-2">
+							<i class="sicon-caret-right text-sm text-primary"></i>
+							</button>
+							<button class=" {% if language.iso_code == "ar" %} salla-slider-next {% else %} salla-slider-prev{% endif %} items-center justify-center h-8 w-8 bg-white/50 rounded-full">
+								<i class="sicon-caret-left text-sm text-primary"></i>
+							</button>			
+					</div>
+					<salla-products-slider
+						source="{{ source_type }}"
+						limit="{{ limit }}"
+						{% if source_type in ['selected', 'categories'] %}
+							source-value="[{{ source_value | map(item => item.id) | join(',') }}]"
+						{% endif %}
+						display-all-url="{{ display_all_url }}"
+						show-single
+						class="block mt-[-80px] sm:max-w-[480px] xl:max-w-[97.4%] lg:max-w-full mx-auto max-w-[90vw] w-full lg:mt-0 relative lg:px-7"
+						type="carousel"
+						slider-config='{
+							"slidesPerView": 2,
+							"spaceBetween": 20,
+							"centeredSlides": false,
+							"speed": 1000,
+							"watchOverflow": true,
+							"navigation": {
+								"nextEl": ".Ar-products-banner-{{ position }} .salla-slider-next",
+								"prevEl": ".Ar-products-banner-{{ position }} .salla-slider-prev"
+							}
+						}'
+					>							
+						<div class="gap-2 arrows hidden lg:flex items-center h-fit mx-auto justify-between absolute w-full left-0 top-[45%] ">
+							{# desktop arrows #}
+							<button class="{% if language.iso_code == "ar" %} salla-slider-next {% else %} salla-slider-prev{% endif %} items-center justify-center shadow-lg h-8 w-8  flex rounded-full">
+								<i class="sicon-caret-right ltr:-scale-x-100 text-sm text-primary"></i>
+							</button>
+							<button class="{% if language.iso_code == "ar" %} salla-slider-prev {% else %} salla-slider-next{% endif %} items-center justify-center shadow-lg h-8 w-8  flex rounded-full">
+								<i class="sicon-caret-left ltr:-scale-x-100 text-sm text-primary"></i>
+							</button>
+					</div></salla-products-slider>
+
+					</div>
+				
+
+
+			</div>
+
+				<div class="block lg:hidden features-products-head text text-font text-center md:mb-6 mb-4">
+					{% if component.url_text %}
+						<a href="{{component.url}}" class="underline text-xl font-semibold pb-1" style="color: {{ component.url_color }};">
+							{{ component.url_text }}
+						</a>
+					{% endif %}
+
+					<h2 class="font-normal text-graytext text-[clamp(0.875rem,0.7985rem+0.3265vw,1.125rem)]" style="color: {{ component.block_title_color }};">
+						{{ component.block_title }}
+					</h2>
+
+
+				</div>
+                
+	
+
+			<div class="overflow-hidden mx-auto lg:mx-0 h-[40.625rem] lg:col-span-1 w-full max-w-132 lg:max-w-full lg:min-h-[650px] min-h-[375px] relative lg:order-1 order-2">
+					<a href="{{component.url}}" class="hidden md:block absolute bottom-4 ltr:left-4 rtl:right-4 text-sm font-semibold underline" style="color: var(--color-background)">
+							{{ component.url_text }}
+					</a>
+				<img src="{{ component.banner_image }}" class=" h-full w-full object-cover " alt="{{ component.block_title }}"/>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+<style>
+	@media(min-width: 375px) {
+		.Ar-products-banner-{{position}} .s-products-list-vertical-cards {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	.Ar-products-banner .s-slider-block__title-nav{
+		display:none;
+	}
+	.Ar-products-banner .salla-slider[type]:not(.hydrated) > div > div,
+	salla-slider[type]:not(.hydrated) .swiper > div > div > div,
+	.carousel-slider .swiper-wrapper > div {
+		padding-left: 0;
+		padding-right: 0;
+	}
+    .Ar-products-banner .swiper.s-slider-container{
+        padding:5px !important;
+    }
+    .Ar-products-banner .swiper-wrapper.s-slider-swiper-wrapper{
+        justify-content: space-between;
+    }
+	.Ar-products-banner .s-products-slider-wrapper{
+		margin-bottom:0px;
+	}
+	.Ar-products-banner .s-products-slider-wrapper .s-products-slider-card.swiper-slide
+	{
+		max-width:fit-content;
+	}
+		@media(min-width: 1024px) {
+
+	.Ar-products-banner .s-products-slider-slider{
+		padding:0px 28px;
+	}
+
+		}
+		.Ar-products-banner .s-products-slider-slider .s-product-card-image{
+			max-height: 405px;
+			min-height: 261px;
+			height: clamp(16.313rem, 13.1440rem + 13.5211vw, 25.313rem) !important;
+			flex: none;
+
+		}
+
+
+
+		/* corner case: if only one product in the slider */
+		.Ar-products-banner.single-product .swiper-wrapper {
+			justify-content: center;
+		}
+		.Ar-products-banner.single-product .salla-slider-prev,
+		.Ar-products-banner.single-product .salla-slider-next {
+			display: none !important;
+		}
+		@media (max-width: 768px) {
+		.Ar-products-banner.single-product .swiper-slide {
+			width: 300px !important;
+			margin: auto;
+		}
+		}
+
+
+</style>
+
+{# corner case: if only one product in the slider #}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const banner = document.querySelector(".Ar-products-banner-{{ position }}");
+
+    const interval = setInterval(() => {
+
+        const slides = banner?.querySelectorAll(".swiper-slide");
+
+        
+        if (!slides || slides.length === 0) return;
+
+        if (slides.length === 1) {
+
+            const swiperEl = banner.querySelector(".swiper");
+
+            if (swiperEl && swiperEl.swiper) {
+                swiperEl.swiper.params.slidesPerView = 1;
+                swiperEl.swiper.params.centeredSlides = true;
+                swiperEl.swiper.update();
+            }
+ 
+            banner.classList.add("single-product");
+        }
+
+        clearInterval(interval);
+
+    }, 300);
+
+});
+</script>

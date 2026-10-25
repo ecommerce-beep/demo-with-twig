@@ -1,0 +1,54 @@
+{% set cart_icon_choose = theme.settings.get('cart_icon_choose') %}
+{% set cart_icon_type = theme.settings.get('cart_icon_type') %}
+
+
+<div class="bottom-nav">
+    {% set cart_icon_choose = theme.settings.get('cart_icon_choose') %}
+    {% set cart_icon_type = theme.settings.get('cart_icon_type') %}
+    
+    {% if theme.settings.get('enable_side_cart') %}
+        {% if theme.settings.get('cart_display_type') == 'side' %}
+            <!-- ✅ زر السلة -->
+            <button id="sidecart-button" class="custom-button flex items-center gap-2 relative sidecart-button justify-center z-50 ">
+                {% if cart_icon_choose %}
+                    {% if cart_icon_type == 'cart_1' %}
+                        <i class="sicon-shopping text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                    {% elseif cart_icon_type == 'cart_2' %}
+                        <i class="sicon-shopping-basket text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                    {% elseif cart_icon_type == 'cart_3' %}
+                        <i class="sicon-shopping-bag text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                    {% elseif cart_icon_type == 'cart_4' %}
+                        <i class="sicon-luggage-cart text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                    {% elseif cart_icon_type == 'cart_5' %}
+                        <i class="sicon-cart-add text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                    {% else %}
+                        <i class="sicon-shopping text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                    {% endif %}
+                {% else %}
+                    <i class="sicon-shopping text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% endif %}
+                <span  class="cart-total-items bg-red-500 absolute -top-2.5 right-2  text-background text-xs rounded-full w-5 h-5 flex items-center justify-center select-none " title="{{ trans('pages.cart.items_count') }}">{{ cart.items_count }}</span>
+            </button>
+        {% endif %}
+    {% else %}
+        <salla-cart-summary class="bottom_nav_cart custom-button">
+            {% if cart_icon_choose %}
+                {% if cart_icon_type == 'cart_1' %}
+                    <i class="sicon-shopping text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% elseif cart_icon_type == 'cart_2' %}
+                    <i class="sicon-shopping-basket text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% elseif cart_icon_type == 'cart_3' %}
+                    <i class="sicon-shopping-bag text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% elseif cart_icon_type == 'cart_4' %}
+                    <i class="sicon-luggage-cart text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% elseif cart_icon_type == 'cart_5' %}
+                    <i class="sicon-cart-add text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% else %}
+                    <i class="sicon-shopping text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+                {% endif %}
+            {% else %}
+                <i class="sicon-shopping text-xl" style="color: {{ theme.settings.get('header_color_icons') }}"></i>
+            {% endif %}
+        </salla-cart-summary>
+    {% endif %}
+</div>

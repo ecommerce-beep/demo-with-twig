@@ -1,0 +1,71 @@
+{
+  "blocks": {
+    "header": {
+      "cart": "سلتي",
+      "search_label": "بحث",
+      "no_results": "لا توجد نتائج",
+      "trending": "كلمات بحث رائجة",
+      "featured_categories": "فئات شائعة",
+      "day": "يوم",
+      "hour": "س",
+      "minute": "د",
+      "second": "ث"
+    },
+    "view_all": "عرض الكل" ,
+    "appBanner": {
+      "download_now": "حمله الان"
+    }
+  },
+  "pages": {
+    "cart": {
+      "cart_options": "خيارات السلة",
+      "goToCartPage": "الانتقال إلى السلة",
+      "emptycart": "السلة فارغة!",
+      "emptycarttext": "إذهب للتصفح",
+      "go_shoping": "استمر في التسوق",
+      "total_shipping": "حساب الشحن",
+      "sub_total": "الإجــمالـي",
+      "continue_shopping": "متابعة التسوق",
+      "verification": "موثّق لدى منصة الأعمال",
+      "quantity": "الكمية",
+      "remove": "إزالة",
+      "brand_single": "اصلي 100%",
+      "brand_details": "اضغط هنا للمزيد من ماركة",
+      "options_total": "مجموع خيارات الطلب"
+    },
+    "order": {
+      "can_edit_or_delete_your_review_within": "يمكنك تعديل أو حذف تقييمك خلال",
+      "edit_period_ended": "تم انتهاء المدة المحددة لتعديل التقييم",
+      "delete_period_ended": "تم انتهاء المدة المحددة لحذف التقييم",
+      "days_since_added": "أيام من إضافته",
+      "option_name": "الخيار",
+      "option_content": "المحتوى"
+    },
+    "single": {
+      "shipping": "شحن مجاني لجميع أنحاء المملكة خلال 3-5 أيام عمل. ",
+      "gift": "عرض مميز: احصل على ساعة ذكية لقياس معدل ضربات القلب مجانًا عند الشراء اليوم!",
+      "sale": "اسرع ينتهي العرض خلال",
+      "discription": "وصف المنتج ",
+      "similar": "منتجات مشابهة",
+      "selected": " منتجات مختارة",
+      "inspire": "Style Inspiration, Styled By You",
+      "similar_description": "استكشف أفضل المنتجات الرقمية المختارة بعناية، واشترِ بسهولة واستمتع بتجربة فورية وآمنة",
+      "no": "كن اول من يقيم المنتج",
+      "WISHLIST": "أضف إلي قائمة الأمنيات"
+    },
+    "index": {
+      "filters": "فلترة"
+    }
+  },
+  "common": {
+    "bank_offer_sub_title_multiple": "ادفع قيمة مشترياتك عبر أحد البطاقات البنكة التالية واحصل على الخصم المحدد",
+    "bank_offer_sub_title_single": "ادفع قيمة مشترياتك عبر أحد بطاقات بنك :bank_name واحصل على خصم بنسبة ",
+    "wishlist_empty": "قائمة الرغبات الخاصة بك فارغة",
+    "rating": "أراء العملاء"
+  },
+  "footer": {
+    "newsletter_title": "سجّلي بريدك الإلكتروني واحصلي على آخر الأخبار والعروض الخاصة ",
+    "newsletter_input_placeholder": "أدخل بريدك الالكتروني",
+    "newsletter_button": "اشتراك"
+  }
+}

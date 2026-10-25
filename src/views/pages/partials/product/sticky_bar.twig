@@ -1,0 +1,182 @@
+
+{% if theme.settings.get('sticky_is_true') and theme.settings.get('product_pro') == 'pro1' %}
+  <div class="hidden md:flex">
+	<div id="sticky-product-bar" class="bottom-strip fixed left-0 right-0 shadow-lg bg-background  z-50 hidden transition-all duration-300 ease-in-out">
+		<div class=" md:px-14 pt-2 pb-3">
+			<div class="flex items-center justify-between gap-4">
+				<div class="flex items-center gap-4 flex-1 min-w-0">
+					<img src="{{ product.image.url|default('https://cdn.salla.sa/images/s-empty.png') }}" alt="{{ product.name }}" class="w-14 h-14  rounded-lg object-cover border border-gray-200 flex-shrink-0">
+					<div class="min-w-0">
+						<h3 class="font-bold text-sm md:text-base text-gray-900 ">{{ product.name }}</h3>
+                        <div class="flex items-center gap-2 mt-1">
+					{% if product.is_on_sale %}
+						<span class="text-primary font-bold text-lg">{{ product.sale_price|money }}</span>
+						<span class="text-gray-400 line-through text-sm">{{ product.regular_price|money }}</span>
+					{% else %}
+						<span class="text-primary font-bold text-lg">
+							{{ product.starting_price ? product.starting_price|money : product.price|money }}
+						</span>
+					{% endif %}
+				</div>
+					</div>
+				</div>
+				<div class="w-[323px]">
+					<salla-add-product-button
+                    width="wide"
+						type="button"
+						class="w-full sticky-product-bar__btn sticky-proxy-btn"
+						product-id="{{ product.id }}">
+						{{ product.add_to_cart_label }}
+					</salla-add-product-button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% else %}
+  	{# floatting #}
+	<div class="floating_product hidden md:block fixed bottom-4 left-4 z-[30]
+            opacity-0 pointer-events-none transition-all duration-300 ease-out">
+  <div class="floating-card-wrapper">
+    <custom-salla-product-card
+      product='{{ product | json_encode }}'
+      horizontal>
+    </custom-salla-product-card>
+  </div>
+</div>
+
+		{# floatting #}
+{% endif %}
+
+
+
+<style>
+/* ===============================
+   FLOATING PRODUCT CARD
+================================ */
+#sticky-product-bar{
+    salla-add-product-button{
+        button{
+            height: 56px;
+        }
+    }
+}
+.floating-card-wrapper {
+  max-width: 360px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+  overflow: hidden;
+
+  transition: all 0.3s ease;
+}
+
+/* Hover animation */
+.floating_product:hover .floating-card-wrapper {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.18),
+    0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const floatingCard = document.querySelector(".floating_product");
+  const mainAddButton = document.querySelector(
+    "form.product-form salla-add-product-button[type='submit']"
+  );
+  const footer = document.querySelector("footer");
+
+  if (!floatingCard || !mainAddButton || !footer) return;
+
+  let isAddBtnVisible = true;
+  let isFooterVisible = false;
+
+  function updateFloatingVisibility() {
+    if (!isAddBtnVisible && !isFooterVisible) {
+      floatingCard.classList.remove("opacity-0", "pointer-events-none");
+      floatingCard.classList.add("opacity-100");
+    } else {
+      floatingCard.classList.add("opacity-0", "pointer-events-none");
+      floatingCard.classList.remove("opacity-100");
+    }
+  }
+
+  /* Observe Add to Cart button */
+  const addBtnObserver = new IntersectionObserver(
+    (entries) => {
+      isAddBtnVisible = entries[0].isIntersecting;
+      updateFloatingVisibility();
+    },
+    {
+      threshold: 0.1
+    }
+  );
+
+  /* Observe footer */
+  const footerObserver = new IntersectionObserver(
+    (entries) => {
+      isFooterVisible = entries[0].isIntersecting;
+      updateFloatingVisibility();
+    },
+    {
+      threshold: 0.1
+    }
+  );
+
+  addBtnObserver.observe(mainAddButton);
+  footerObserver.observe(footer);
+});
+
+
+{#  #}
+document.addEventListener("DOMContentLoaded", function () {
+  const stickyBar = document.getElementById("sticky-product-bar");
+  const mainAddButton = document.querySelector(
+    "form.product-form salla-add-product-button[type='submit']"
+  );
+  const stickyProxyBtn = document.querySelector(".sticky-proxy-btn");
+
+  if (!stickyBar || !mainAddButton || !stickyProxyBtn) return;
+
+  function updateBar() {
+    const mainButtonRect = mainAddButton.getBoundingClientRect();
+    const shouldShow = mainButtonRect.bottom < 100;
+
+    if (shouldShow) {
+      stickyBar.classList.remove("hidden");
+      stickyBar.style.position = "fixed";
+      stickyBar.style.bottom = "0";
+      stickyBar.style.top = "auto";
+    } else {
+      stickyBar.classList.add("hidden");
+    }
+  }
+
+  stickyProxyBtn.addEventListener("click", function () {
+    mainAddButton.click();
+  });
+
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        updateBar();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  window.addEventListener("resize", updateBar);
+  setTimeout(updateBar, 500);
+});
+</script>

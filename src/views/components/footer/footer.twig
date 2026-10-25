@@ -1,0 +1,101 @@
+<!-- Footer Wrapper -->
+<footer class="store-footer">
+
+    <!-- Footer Inner -->
+    <div aria-label="footer" class="store-footer__inner !pt-11 !pb-0 md:!pb-9">
+
+        <!-- Main Footer Grid -->
+				<div class="container flex flex-col items-center justify-start  md:items-start  md:grid grid-cols-1  md:grid-cols-[3fr_3fr_3fr] ltr:lg:grid-cols-[2fr_2fr_3fr] rtl:lg:grid-cols-[3fr_2fr_2fr] gap-4 md:gap-6">
+
+					<!-- Footer Pages Links -->
+					<div class="order-2 hidden md:block">
+						<h3 class="text-center rtl:md:text-right ltr:md:text-left">{{ trans('blocks.footer.pages_links') }}</h3>
+						<salla-menu source="footer"></salla-menu>
+					</div>
+					<!-- Contacts Column -->
+					<div class="order-3 flex justify-between w-full gap-2 items-start">
+						<div class="block md:hidden">
+							<h3 class="rtl:text-right ltr:text-left">{{ trans('blocks.footer.pages_links') }}</h3>
+							<salla-menu source="footer"></salla-menu>
+						</div>
+						<salla-contacts></salla-contacts>
+					</div>
+					
+						<!-- Store Info Column -->
+					<div class="text-center rtl:md:text-right ltr:md:text-left order-1 ltr:md:order-4 rtl:md:order-1">
+
+						<!-- Store Logo / Name -->
+						<a href="{{ link('/') }}" class="flex  m-0 items-center justify-center  md:justify-start">
+							<div class="mb-4 footer_logo_size {{ theme.settings.get('footer_logo_size') == 'small' ? 'w-[55px] md:w-[50px] h-auto' : '' }} {{ theme.settings.get('footer_logo_size') == 'medium' or not theme.settings.get('footer_logo_size') ? 'w-[74px] md:w-[69px] h-auto' : '' }} {{ theme.settings.get('footer_logo_size') == 'large' ? 'w-[100px] md:w-[95px] h-auto' : '' }} ">
+								<img src="{{store.logo}}" class="w-full h-full" alt="{{store.name}}">
+							</div>
+						</a>
+
+						<!-- Store Description -->
+						{% if store.description %}
+							<div class="mb-6 store-description ">
+								{{ store.description|raw }}
+							</div>
+						{% endif %}
+						<!-- Social Icons (Desktop Only) -->
+						<div class="block">
+								<salla-social class="block mb-6"></salla-social>
+						</div>
+					</div><!-- END Store Info Column -->
+				</div>
+				{#### Start newsLatter ########}
+					{% if theme.settings.get('newsletter_view') %}
+					
+						{% include 'pages.partials.newslatter.twig' with {
+                        class: "CA-newsletter  justify-center md:items-start mb-8 md:mb-0 md:flex flex-col-reverse md:flex-col gap-3"
+                    	}  %}
+					{% endif %}
+
+				{#### End newsLatter ########}
+				
+    </div>
+	<!-- END Footer Inner -->
+
+    <!-- Copyright + Payments -->
+	<div class="bg-primary">
+		<div class=" grid grid-cols-1 gap-3 md:flex flex-col  md:flex-row items-center justify-between py-4 container text-center bg-transparent  justify-items-center">
+			{# <span class="text-sm copyright-text">{% hook copyright %}</span> #}
+			<salla-payments class="order-3"></salla-payments>
+			<div class="flex rtl:space-x-reverse space-x-2 items-end order-2">
+
+								<!-- VAT Certificate Thumbnail -->
+								{% if store.settings.tax.certificate %}
+									<a class="load-img-onclick" data-modal-id="modal-value-tax" href="#/" alt="{{ store.settings.tax.number }}">
+										<img width="100%" height="100%" src="{{ 'images/s-empty.png' | cdn }}" data-src="{{ 'images/tax.png' | cdn(70,70) }}" class="lazy w-10 rounded-sm hover:opacity-80 transition-opacity" alt="value added tax">
+									</a>
+								{% endif %}
+
+								<!-- VAT Number Text -->
+								<div>
+									<p class="text-sm text-text-grey mb-1">{{ trans('common.elements.tax_number') }}</p>
+									<b class="text-sm">{{ store.settings.tax.number }}</b>
+								</div>
+
+							</div><!-- END VAT Row -->
+			<salla-apps-icons class="order-1">
+			</salla-apps-icons>
+		</div>
+	</div>
+    <!-- Decoration Span (Hidden) -->
+    <span class="hidden bottom-2 rtl:pl-24 ltr:pr-24 md:grid-cols-3 opacity-40"></span>
+
+</footer><!-- END Footer -->
+<style>
+@media (max-width:768px) {
+    .s-contacts-title,.s-menu-footer-list,.footer-description,
+    salla-apps-icons h3 {
+        /* text-align: center; */
+    }
+	.s-social-list{
+		justify-content:center;
+	}
+}
+
+
+</style>
+

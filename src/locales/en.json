@@ -1,0 +1,71 @@
+{
+  "blocks": {
+    "header": {
+      "cart": "My Cart",
+      "search_label": "Search",
+      "no_results": "No Results Found",
+      "trending": "Trending",
+      "featured_categories": "Featured Categories",
+      "day": "d",
+      "hour": "h",
+      "minute": "m",
+      "second": "s"
+    },
+    "view_all": "Show More" ,
+    "appBanner": {
+      "download_now": "download now"
+    }
+  },
+  "pages": {
+    "cart": {
+      "cart_options": "Cart Options",
+      "goToCartPage": "Go to Cart",
+      "emptycart": "Cart is empty!",
+      "emptycarttext": "Go to browse",
+      "go_shoping": "Continue Shopping",
+      "total_shipping": "Shipping Cost",
+      "sub_total": "Subtotal",
+      "continue_shopping": "Continue Shopping",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "brand_single": "Original 100%",
+      "brand_details": "Click here for more details",
+      "verification": "Certified by the Business Platform",
+      "options_total": "Total Order Options"
+    },
+    "order": {
+      "can_edit_or_delete_your_review_within": "You can edit or delete your review within",
+      "edit_period_ended": "The period to edit the review has ended",
+      "delete_period_ended": "The period to delete the review has ended",
+      "days_since_added": "days since it was added",
+      "option_name": "Option name",
+      "option_content": "Content"
+    },
+    "single": {
+      "shipping": "Free shipping to all parts of the Kingdom within 3-5 business days.",
+      "gift": "Special Offer: Get a free heart rate smartwatch when you purchase today!",
+      "sale": "Hurry, the offer ends in ",
+      "discription": "Description",
+      "similar": "You May Also Like",
+      "selected": "Shop the Look",
+      "inspire": "Style Inspiration, Styled By You",
+      "similar_description": "Explore the best carefully selected digital products, buy easily, and enjoy an instant and secure experience",
+      "no": "Be the first to review the product",
+      "WISHLIST": "ADD TO WISHLIST"
+    },
+    "index": {
+      "filters": "Filter"
+    }
+  },
+  "common": {
+    "bank_offer_sub_title_multiple": "Pay for your purchases via one of the following bank cards and get the specified discount",
+    "bank_offer_sub_title_single": "Pay for your purchases via :bank_name bank card and get discount",
+    "wishlist_empty": "Your wishlist is empty",
+    "rating": "Reviews"
+  },
+  "footer": {
+    "newsletter_title": "Register your email address and receive the latest news and special offers.",
+    "newsletter_input_placeholder": "Enter your email",
+    "newsletter_button": "Subscribe"
+  }
+}

@@ -1,0 +1,615 @@
+{#
+| Variable                                          | Type                | Description                                                    |
+|---------------------------------------------------|---------------------|----------------------------------------------------------------|
+| page                                              | object              |                                                                |
+| page.title                                        | string              |                                                                |
+| page.slug                                         | string              |                                                                |
+| cart                                              | Cart                |                                                                |
+| cart.id                                           | string              | Unique string for current cart                                 |
+| cart.is_require_shipping                          | bool                | Does one of cart items require shipping?                       |
+| cart.has_shipping                                 | bool                | Does shipping company selected?                                |
+| cart.real_shipping_cost                           | float               | Shipping cost can become free by an offer, coupon              |
+| cart.sub_total                                    | float               | The sum of items price without shipping or other costs         |
+| cart.discount                                     | float               | final discount                                                 |
+| cart.coupon                                       | ?string             |                                                                |
+| cart.total                                        | float               |                                                                |
+| cart.tax_amount                                   | float               | Calculate Tax amount                                                               |
+| cart.free_shipping_bar                            | ?object             |                                                                |
+| cart.free_shipping_bar.minimum_amount             | float               | how much cart total should be to apply free shipping ex: 1000  |
+| cart.free_shipping_bar.has_free_shipping          | bool                | true when `cart.free_shipping_bar.percent==100`                |
+| cart.free_shipping_bar.percent                    | float               | `0 - 100`                                                      |
+| cart.free_shipping_bar.remaining                  | float               | `830`                                                          |
+| cart.items                                        | CartItem[]          |                                                                |
+| cart.options                                      | CartOptions[]       | array of options                                               |
+| cart.items[].id                                   | int                 |                                                                |
+| cart.items[].is_hidden_quantity                   | bool                |                                                                |
+| cart.items[].url                                  | string              | Product url                                                    |
+| cart.items[].quantity                             | int                 |                                                                |
+| cart.items[].type                                 | string              | product type                                                   |
+| cart.items[].product_price                        | MoneyTaxable        |                                                                |
+| cart.items[].price                                | Money\|MoneyTaxable |                                                                |
+| cart.items[].total                                | Money               |                                                                |
+| cart.items[].product_id                           | int                 |                                                                |
+| cart.items[].notes                                | string              |                                                                |
+| cart.items[].can_add_note                         | bool                |                                                                |
+| cart.items[].can_upload_file                      | bool                |                                                                |
+| cart.items[].is_available                         | bool                |                                                                |
+| cart.items[].offer                                | ?object             |                                                                |
+| cart.items[].offer.discount                       | float               |                                                                |
+| cart.items[].offer.is_free                        | bool                |                                                                |
+| cart.items[].offer.names                          | ?string             | ex: `Buy 3 and the 4th on us, National Day`                    |
+| cart.items[].donation                             | ?object             |                                                                |
+| cart.items[].attachments                          | ?array              |                                                                |
+| cart.items[].attachments[].id                     | int                 | image id, to be attache with the formData                      |
+| cart.items[].attachments[].url                    | string              | image url                                                      |
+| cart.items[].attachments[].product_id             | int                 |                                                                |
+| cart.items[].attachments[].item_id                | int                 |                                                                |
+| cart.items[].attachments[].name                   | int                 | image file name                                                |
+#}
+
+{% extends "layouts.master" %}
+{% block content %}
+    <div class="px-4 md:px-10 bg-[#fafafa]">
+        {# add breadcumbs container in pages to make a space in case breadcrumbs is off #}
+        <nav class="breadcrumbs w-full py-5">
+            <salla-breadcrumb></salla-breadcrumb>
+        </nav>
+        <h1 class="sr-only">{{ trans('blocks.header.cart') }}</h1>
+        <salla-conditional-offer></salla-conditional-offer>
+        <div class="pt-5 flex flex-col items-start lg:flex-row pb-6 lg:pb-20">
+            <div class="main-content w-full lg:w-[calc(100%-419px)]">
+                {% hook 'cart:items.start' %}
+
+                {% for item in cart.items %}
+                    <form onchange="salla.form.onChange('cart.updateItem', event)" id="item-{{ item.id }}">
+                        <section class="cart-item bg-white px-[10px] py-[20px] xs:p-7 rounded-md mb-5 relative">
+                            <input type="hidden" name="id" value="{{ item.id }}">
+                                <!-- product -->
+                                <div class="md:flex rtl:space-x-reverse md:space-x-12 items-start justify-between md:mb-8 last:mb-0">
+                                    <div class="flex flex-col md:flex-row  flex-1 w-full justify-between">
+                                        <div class="flex gap-2 mb-3 w-full">
+
+                                            <a href="{{ item.url }}" class="relative overflow-hidden shrink-0">
+                                                {% if loop.first %}
+                                                    <img src="{{ item.product_image }}"
+                                                        alt="{{ item.product_name }}"
+                                                        class="flex-none w-[110px] md:w-[120px] h-[195px] md:h-[140px] border border-gray-200 bg-gray-100 object-center object-cover">
+                                                {% else %}
+                                                    <img src="{{ 'images/s-empty.png' | cdn }}"
+                                                        data-src="{{ item.product_image }}"
+                                                        alt="{{ item.product_name }}"
+                                                        class="lazy flex-none w-[110px] md:w-[120px] h-[195px] md:h-[140px] border border-gray-200 bg-gray-100 object-center object-cover">
+                                                {% endif %}
+    
+                                                <!-- free product ribbon -->
+                                                <div class="free-ribbon absolute top-[11px] right-[-38px] w-32 bg-red-600 text-white text-xs font-bold text-center py-1 rotate-45 shadow-md {{ item.price.getMoney().amount == 0 ? '' : 'hidden' }}">
+                                                    {{ trans('pages.loyalty_program.free_product') }}
+                                                </div>
+                                                <!-- end free product ribbon -->
+                                                
+                                            </a>
+                                            <div class="space-y-1 flex-grow basis-0 min-w-0 w-full">
+                                                <h1 class="font-mediumtext-[clamp(0.875rem,0.85rem+0.3vw,1rem)] mb-4 text-font leading-5 md:leading-6 tracking-wide md:tracking-normal line-clamp-2">
+                                                    <a href="{{ item.url }}" class="text-base">{{ item.product_name }}</a>
+                                                </h1>
+    
+                                               
+                                               {% include 'pages.partials.product.options' with {product:item} %}
+                                               <div class="md:hidden flex gap-1 flex-row-reverse items-center justify-end">
+                                                <span class="  font-medium
+                                                text-[clamp(1rem,0.95rem+0.3vw,1.125rem)]
+                                                leading-5 md:leading-8
+                                                text-[#9F9FA9]
+                                                line-through
+                                                tracking-normal  item-regular-price {{ item.offer ? '' : 'hidden' }}" >{{ item.product_price|money }}</span>
+                                                                                                <span class="  font-medium
+                                                text-[clamp(1rem,0.95rem+0.3vw,1.125rem)]
+                                                leading-5 md:leading-8
+                                                tracking-normal text-sm text-[#9F9FA9] line-through item-original-price {{ item.is_on_sale ? '' : 'hidden' }}" id="original_price">{{ item.original_price|money }}</span>
+                                                <span class="  font-medium text-lg leading-8 
+                                                tracking-normal item-price {{ item.has_discount ?  'text-font' : 'text-sm text-gray-500' }}" id="has_discount">{{ item.price|money }}</span>
+                                                
+                                               {% if item.product.promotion_title %}
+                                                <span class="text-rose-700 text-sm">{{ item.product.promotion_title }}</span>
+                                                {% endif %}
+                                               
+                                                {% if item.weight_label %}
+                                                <p class="text-sm text-gray-500 "> {{ trans('pages.products.weight') }}
+                                                 <span>{{ item.weight_label }}</span>
+                                                </p>
+                                                {% endif %}
+                                                
+                                            </div>
+                                                {# End Cart Item offers #}
+    
+                                            </div>
+                                        </div>
+                                        <div class="flex !m-0 flex-row-reverse md:flex-col-reverse gap-3 items-center justify-between  md:justify-end md:items-end">
+                                            {% set item_total = item.detailed_offers|length > 0 ? item.total_special_price|money : item.total|money%}
+                                            <p class="text-primary flex-none font-bold text-sm hidden">
+                                                <span>{{ trans('pages.cart.total') }}:</span>
+                                                <span class="inline-block item-total">{{ item.is_available?item_total: trans('pages.cart.out_of_stock') }}</span>
+                                            </p>
+                                            <span class=" flex">
+                                                
+                                                <salla-button type="button" shape="icon" size="small" color="transparent" class="btn--delete " aria-label="Remove from the cart"
+                                                        onclick="salla.cart.deleteItem('{{ item.id }}').then(() => document.querySelector('#item-{{ item.id }}').remove())">
+                                                    <i class="sicon-trash-2"></i>
+                                                </salla-button>
+                                                 <salla-button
+                                    shape="icon"
+                                    fill="outline"
+                                    color="light"
+                                    name="product-name-{{ item.product_id  }}"
+                                    aria-label="{% if item.in_wishlist %}Remove from wishlist{% else %}Add to wishlist{% endif %}"
+                                    class="mt-auto btn--wishlist s-product-card-wishlist-btn !text-primary animated {% if item.in_wishlist %}is-added{% else %}not-added{% endif %}"
+                                    onclick="salla.wishlist.toggle({{ item.product_id  }})"
+                                    data-id="{{ item.product_id  }}">
+            
+                                    <span class="relative">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="17" viewBox="0 0 19 17" class="filled" fill="none">
+<path d="M9.44531 1.01562C10.7916 0.00466627 13.0199 -0.602816 15.5039 0.920898C17.1812 1.94976 18.1424 4.07387 17.8701 6.52734C17.8321 6.87034 17.5236 7.11801 17.1807 7.08008C16.8376 7.04201 16.5899 6.73268 16.6279 6.38965C16.8576 4.32033 16.0376 2.71459 14.8506 1.98633C12.8653 0.768564 11.1924 1.26584 10.1953 2.01465L10.1777 2.02832C9.95257 2.19742 9.75923 2.34303 9.60449 2.44434C9.52419 2.49691 9.43505 2.55006 9.34277 2.5918C9.25501 2.63146 9.11954 2.68164 8.95801 2.68164C8.79659 2.68159 8.66194 2.63144 8.57422 2.5918C8.48193 2.55009 8.39283 2.49691 8.3125 2.44434C8.15769 2.34299 7.96358 2.19752 7.73828 2.02832L7.7207 2.01465C6.72359 1.26599 5.0514 0.768801 3.06641 1.98633C1.8513 2.73168 1.0196 4.39786 1.30664 6.53809C1.59207 8.66605 2.99765 11.2634 6.2793 13.6924C7.59765 14.6682 8.07931 14.9999 8.95801 15C9.30313 15 9.58292 15.2799 9.58301 15.625C9.58301 15.9702 9.30319 16.25 8.95801 16.25C7.6331 16.2499 6.83246 15.6564 5.62305 14.7607C5.59445 14.7396 5.5652 14.7188 5.53613 14.6973C2.05313 12.1193 0.408173 9.24506 0.0673828 6.7041C-0.271736 4.17538 0.695405 1.97452 2.41309 0.920898C4.89711 -0.602647 7.12545 0.00463415 8.47168 1.01562C8.69286 1.18173 8.84491 1.29522 8.95801 1.37207C9.07117 1.2952 9.22383 1.18195 9.44531 1.01562ZM11.8877 5.94043C12.1734 5.64054 12.6483 5.62943 12.9482 5.91504C13.248 6.20071 13.2602 6.67569 12.9746 6.97559L10.709 9.35352H17.292C17.706 9.35363 18.0418 9.68952 18.042 10.1035C18.0419 10.5176 17.7061 10.8534 17.292 10.8535H10.709L12.9746 13.2324C13.26 13.5324 13.248 14.0074 12.9482 14.293C12.6483 14.5784 12.1733 14.5663 11.8877 14.2666L8.41602 10.6211C8.14018 10.3315 8.14025 9.87657 8.41602 9.58691L11.8877 5.94043Z" fill=""/>
+</svg>
+                                        <!-- Filled Heart -->
+                                        
+            
+                                        <!-- Empty Heart -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="17" viewBox="0 0 19 17" class="not-filled" fill="">
+<path d="M9.44531 1.01562C10.7916 0.00466627 13.0199 -0.602816 15.5039 0.920898C17.1812 1.94976 18.1424 4.07387 17.8701 6.52734C17.8321 6.87034 17.5236 7.11801 17.1807 7.08008C16.8376 7.04201 16.5899 6.73268 16.6279 6.38965C16.8576 4.32033 16.0376 2.71459 14.8506 1.98633C12.8653 0.768564 11.1924 1.26584 10.1953 2.01465L10.1777 2.02832C9.95257 2.19742 9.75923 2.34303 9.60449 2.44434C9.52419 2.49691 9.43505 2.55006 9.34277 2.5918C9.25501 2.63146 9.11954 2.68164 8.95801 2.68164C8.79659 2.68159 8.66194 2.63144 8.57422 2.5918C8.48193 2.55009 8.39283 2.49691 8.3125 2.44434C8.15769 2.34299 7.96358 2.19752 7.73828 2.02832L7.7207 2.01465C6.72359 1.26599 5.0514 0.768801 3.06641 1.98633C1.8513 2.73168 1.0196 4.39786 1.30664 6.53809C1.59207 8.66605 2.99765 11.2634 6.2793 13.6924C7.59765 14.6682 8.07931 14.9999 8.95801 15C9.30313 15 9.58292 15.2799 9.58301 15.625C9.58301 15.9702 9.30319 16.25 8.95801 16.25C7.6331 16.2499 6.83246 15.6564 5.62305 14.7607C5.59445 14.7396 5.5652 14.7188 5.53613 14.6973C2.05313 12.1193 0.408173 9.24506 0.0673828 6.7041C-0.271736 4.17538 0.695405 1.97452 2.41309 0.920898C4.89711 -0.602647 7.12545 0.00463415 8.47168 1.01562C8.69286 1.18173 8.84491 1.29522 8.95801 1.37207C9.07117 1.2952 9.22383 1.18195 9.44531 1.01562ZM11.8877 5.94043C12.1734 5.64054 12.6483 5.62943 12.9482 5.91504C13.248 6.20071 13.2602 6.67569 12.9746 6.97559L10.709 9.35352H17.292C17.706 9.35363 18.0418 9.68952 18.042 10.1035C18.0419 10.5176 17.7061 10.8534 17.292 10.8535H10.709L12.9746 13.2324C13.26 13.5324 13.248 14.0074 12.9482 14.293C12.6483 14.5784 12.1733 14.5663 11.8877 14.2666L8.41602 10.6211C8.14018 10.3315 8.14025 9.87657 8.41602 9.58691L11.8877 5.94043Z" fill=""/>
+</svg>
+                                    </span>
+                                </salla-button>
+                                            </span>
+                                            {% if item.type == 'donating' %}
+                                                <span></span>
+                                            {% elseif item.is_hidden_quantity %}
+                                                <input type="hidden" value="{{ item.quantity }}" name="quantity" aria-label="Quantity"/>
+                                                <span class="w-10 text-center">{{ item.quantity }}</span>
+                                            {% else %}
+                                                <salla-quantity-input cart-item-id="{{ item.id }}"  max="{{ item.max_quantity }}"
+                                                    class="transtion transition-color duration-300"
+                                                    aria-label="Quantity"
+                                                    value="{{ item.quantity }}" name="quantity">
+                                                </salla-quantity-input>
+                                            {% endif %}
+                                            
+                                            {# desktop #}
+                                            <div class="hidden md:flex gap-1 flex-row-reverse items-center">
+                                                <span class="  font-medium
+                                                text-[clamp(1rem,0.95rem+0.3vw,1.125rem)]
+                                                leading-5 md:leading-8
+                                                text-[#9F9FA9]
+                                                line-through
+                                                tracking-normal  item-regular-price {{ item.offer ? '' : 'hidden' }}" >{{ item.product_price|money }}</span>
+                                                                                                <span class="  font-medium
+                                                text-[clamp(1rem,0.95rem+0.3vw,1.125rem)]
+                                                leading-5 md:leading-8
+                                                tracking-normal text-sm text-[#9F9FA9] line-through item-original-price {{ item.is_on_sale ? '' : 'hidden' }}" id="original_price">{{ item.original_price|money }}</span>
+                                                <span class="  font-medium text-lg leading-8 
+                                                tracking-normal item-price {{ item.has_discount ?  'text-font' : 'text-sm text-gray-500' }}" id="has_discount">{{ item.price|money }}</span>
+                                               {% if item.product.promotion_title %}
+                                               <span class="text-rose-700 text-sm">{{ item.product.promotion_title }}</span>
+                                
+                                {% endif %}
+                                                {% if item.weight_label %}
+                                                <p class="text-sm text-gray-500 "> {{ trans('pages.products.weight') }}
+                                                 <span>{{ item.weight_label }}</span>
+                                                </p>
+                                                {% endif %}
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                 <span class="old-offers flex items-center gap-1 mx-1.5  {{ item.detailed_offers ? 'hidden' : '' }}">
+                                                    <i class="sicon-discount-calculator text-gray-500 offer-icon {{ item.offer?'':'hidden' }}"></i>
+                                                    <span class="text-sm text-gray-500 offer-name {{ item.offer ?  '' : 'hidden' }}">{{ item.offer.names }}</span>
+                                                </span>
+                                                {# Cart Item Offers #}
+                                                <salla-cart-item-offers
+                                                    quantity="{{ item.quantity }}"
+                                                    item-id="{{ item.id }}"
+                                                    product-price="{{ item.product_price }}"
+                                                    offers="{{ item.detailed_offers|json_encode }}"></salla-cart-item-offers>
+
+                            
+                        </section>
+                    </form>
+                {% else %}
+                    <div class="no-content-placeholder">
+                        <i class="sicon-shopping-bag icon"></i>
+                        <p>{{ trans('pages.cart.empty_cart') }}</p>
+                        <a href="{{ link('/') }}"
+                           class="btn btn--outline-primary btn--rounded-full">{{ trans('common.elements.back_home') }}</a>
+                    </div>
+                {% endfor %}
+
+                {% if cart.options|length %}
+                  <div class="cart-options">
+                    {% for product_option in cart.options %}
+                      <form class="first:pt-5 relative" onchange="salla.form.onChange('cart.updateItem', event)" id="item-{{ product_option.id }}">
+                        <input type="hidden" name="id" value="{{ product_option.id }}">
+                        <input type="hidden" name="quantity" value="{{ product_option.quantity }}">
+                        {% include 'pages.partials.product.options' with { product: product_option } %}
+                      </form>                   
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                    
+                <salla-offer></salla-offer>
+                
+                {% hook 'cart:items.end' %}
+            </div>
+
+            {% hook 'cart:summary.start' %}
+
+            <!-- sidebar -->
+            {% if cart.items|length %}
+                <div class="sticky top-24 w-full lg:w-[419px] rtl:lg:mr-8 ltr:lg:ml-8">
+                    <div class="shadow-default bg-[color-mix(in_srgb,var(--color-primary)_5%,white)] p-5 xs:p-7 rounded-md mb-5 relative {{ cart.free_shipping_bar ? '' : 'hidden' }}" id="free-shipping">
+                        <div class="flex rtl:space-x-reverse space-x-3 items-center">
+                            
+                            <i class="bg-primary !hidden text-white rounded-icon sicon-shipping-fast {{ theme.is_rtl ? 'flip-x':'' }}"></i>
+                            {% set is_free=cart.free_shipping_bar.has_free_shipping %}
+                            <div class="flex-1">
+                                 
+                                <p class="flex gap-1 shipping-item text-sm font- text-gray-500">
+                                        <i class=" {{ theme.is_rtl ? 'flip-x':'' }}"><svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                    height="20" viewBox="0 0 20 20" fill="none">
+                                    <path
+                                        d="M20 3.75V5H8.125V14.375H11.9725C12.2513 13.3006 13.2175 12.5 14.375 12.5C15.5325 12.5 16.4987 13.3006 16.7775 14.375H17.5V11.25H18.75V15.625H16.7775C16.4987 16.6994 15.5325 17.5 14.375 17.5C13.2175 17.5 12.2513 16.6994 11.9725 15.625H6.7775C6.49875 16.6994 5.5325 17.5 4.375 17.5C3.2175 17.5 2.25125 16.6994 1.9725 15.625H0V10.5275L0.0393753 10.4294L1.28938 6.67938L1.425 6.25H6.875V3.75H20ZM19.375 6.25V7.5H13.75V6.25H19.375ZM6.875 7.5H2.32438L1.25 10.7031V14.375H1.9725C2.25125 13.3006 3.2175 12.5 4.375 12.5C5.5325 12.5 6.49875 13.3006 6.7775 14.375H6.875V7.5ZM18.75 8.75V10H15V8.75H18.75ZM14.375 13.75C13.6769 13.75 13.125 14.3019 13.125 15C13.125 15.6981 13.6769 16.25 14.375 16.25C15.0731 16.25 15.625 15.6981 15.625 15C15.625 14.3019 15.0731 13.75 14.375 13.75ZM4.375 13.75C3.67687 13.75 3.125 14.3019 3.125 15C3.125 15.6981 3.67687 16.25 4.375 16.25C5.07312 16.25 5.625 15.6981 5.625 15C5.625 14.3019 5.07312 13.75 4.375 13.75Z"
+                                        fill="#71717B" />
+                                </svg></i>
+                                        <span id="free-shipping-msg">{{ (is_free
+                                            ?trans('pages.cart.has_free_shipping')
+                                            :trans('pages.cart.free_shipping_alert', {'amount': cart.free_shipping_bar.remaining|money}))
+                                            | raw }}</span>
+                                    <span class="emoji {{ is_free?'':'hidden' }}" id="free-shipping-applied">🎉</span>
+                                </p>
+                            </div>
+                        </div>
+      <div class="mt-2 overflow-hidden {{ is_free ? 'hidden' : '' }}"
+     id="free-shipping-bar"
+      style="height:4px; background-color:#E4E4E7;">
+    <div class="progress-bg transition-all duration-500 h-full bg-[#C5992C]"
+         style="width:{{ cart.free_shipping_bar.percent }}%">
+    </div>
+</div>
+                    </div>
+                    
+
+                    <div id="cart-gifting" class="shadow-default bg-[color-mix(in_srgb,var(--color-primary)_5%,white)] xs:p-2 rounded-md mb-5 relative  {{gift.enabled ? '' : 'hidden' }}">
+                        <salla-gifting id="salla-gifting" class="mt-5" widget-title="{{ trans("pages.cart.gift_widget_title") }}"  widget-subtitle="{{ gift.text }}" class="mt-5" {{gift.type}}-products  vertical></salla-gifting>
+                    </div>
+
+                    <div class="shadow-default bg-white p-5 xs:p-7 rounded-md mb-5 relative transition-height duration-1000">
+                        <h2 class="font-bold text-sm mb-5">{{ trans('pages.cart.summary') }}</h2>
+                        {# todo :: use form #}
+                        {# {% if store.settings.cart.apply_coupon_enabled %} #}
+                            <div class="border-gray-200 border-b pb-5 mb-5">
+                                <label for="coupon"
+                                       class="block text-sm ">{{ trans('pages.cart.have_coupon') }}</label>
+                                <div class="mt-2.5 relative">
+                                    <input placeholder="{{ trans('pages.cart.coupon_placeholder') }}"
+                                            {{ cart.coupon ? 'disabled':'' }}
+                                           class="rtl:pl-24 ltr:pr-24 form-input" value="{{ cart.coupon }}" id="coupon-input"
+                                           name="coupon"
+										   aria-label="Apply coupon"
+                                           type="text">
+
+                                    <salla-button
+                                            class="btn--coupon {{ cart.coupon?'has-coupon btn--danger':'has-not-coupon btn--default' }}"
+                                            loader-position="center" id="coupon-btn">
+                                        <span class="coupon-text">{{ trans('pages.cart.save_coupon') }}</span>
+                                        <i class="sicon-cancel icon text-xl w-8"></i>
+                                    </salla-button>
+                                </div>
+                                <span class="text-xs text-red-700" id="coupon-error"></span>
+                            </div>
+                        {# {% endif %} #}
+                        <div class="flex justify-between text-sm mb-5">
+                            <span class="text-gray-500"> {{ trans(cart.tax_amount ? "pages.cart.items_total_without_tax" : "pages.cart.items_total") }} </span>
+                            <b id="sub-total">{{ cart.sub_total|money }}</b>
+                        </div>
+
+                        {% if cart.options|length %}
+                          <div class="flex justify-between text-sm mb-5">
+                            <span class="text-gray-500">{{ trans('pages.cart.order_options_total') }}</span>
+                            <b id="cart-options-total">{{ cart.options_total|money }}</b>
+                          </div>
+                        {% endif %}
+
+                        <div id="shipping-cost"
+                             class="flex justify-between text-sm mb-5 {{ cart.has_shipping ? '' : 'hidden' }}">
+                            <span class="text-gray-500">{{ trans('pages.cart.shipping_cost') }}</span>
+                            <b>{{ cart.real_shipping_cost|money }}</b>
+                        </div>
+
+
+                        {% if store.settings.cart.apply_coupon_enabled %}
+                            <div class="py-5 mb-5">
+                                <salla-cart-coupons></salla-cart-coupons>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- coupon discount -->
+                        <div id="total-discount" class="flex justify-between text-sm {{ cart.total_discount ? '' : 'hidden' }}">
+                            <span class="text-gray-500 block  h-10">{{ trans('pages.cart.discount') }}</span>
+                            <b>- {{ cart.total_discount|money }}</b>
+                        </div>
+
+                        {% if cart.tax_amount %}
+                            <div class="flex justify-between text-sm mb-5">
+                                <span class="text-gray-500">{{ trans('pages.cart.VAT_tax_amount') }}</span>
+                                <b id="tax-amount">{{ cart.tax_amount|money }}</b>
+                            </div>
+                        {% endif %}
+
+                        <div class="flex justify-between text-lg mb-5">
+                            <span class="text-gray-500">{{ trans('pages.cart.final_total') }}</span>
+                            <b data-cart-total>{{ cart.total|money }}</b>
+                        </div>
+
+                      <div class="cart-submit-wrap {% if theme.settings.get('sticky_cart_button') %} sticky-cart-button {% else %} md:static md:p-0 md:border-0 {% endif %}">
+    {% hook 'cart:submit.start' %}
+
+    <salla-button
+        id="cart-submit"
+        loader-position="center"
+        width="wide">
+        {{ trans('pages.cart.complete_order') }}
+    </salla-button>
+
+    {% hook 'cart:submit.end' %}
+</div>
+                        {% if loyalty and user.loyalty_points %}
+                        <div class="  rounded-md my-6 bg-[#F4F0EB]">
+                            <salla-loyalty-panel
+                            prize-points='{{ loyalty.prize.points }}'
+                            prize-title='{{ loyalty.prize.title }}'>
+                        </salla-loyalty-panel>
+                        </div>
+                        {% endif %}
+
+
+                   
+                    {% set features = theme.settings.get('cart_page_features') %}
+
+                {% if features is not empty %}
+                <div class="grid grid-cols-3 gap-4 mt-5">
+                    {% for feature in features %}
+                    <div class="flex flex-col items-center text-center gap-2">
+
+                        {# Image #}
+                        {% if feature.cart_features_image %}
+                        <img src="{{ feature.cart_features_image }}"
+                            alt="{{ feature.cart_features_content[language.iso_code]|default('feature') }}"
+                            class="w-8 h-8 object-contain mb-3" />
+                        {% endif %}
+
+                        {# Content #}
+                        {% set content = feature.cart_features_content[language.iso_code]|default('') %}
+                        {% if feature.cart_features_link %}
+                        <a href="{{ feature.cart_features_link }}"
+                            class="text-zinc-800 text-center  text-sm font-light leading-5 tracking-normal  w-full " style="overflow-wrap: break-word;">
+                            {{ content }}
+                        </a>
+                        {% else %}
+                        <span class="text-zinc-800 text-center  text-sm font-light leading-5 tracking-normal  w-full " style="overflow-wrap: break-word;">
+                            {{ content }}
+                        </span>
+                        {% endif %}
+
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                    <div class="mt-5">
+                        <salla-payments></salla-payments>
+                    </div>
+					
+                    {# {% endif %} #}
+                        {% hook 'cart:summary.end' %}
+                    </div>
+
+                     <!-- Tiered Offer Component -->
+                    <salla-tiered-offer></salla-tiered-offer>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="single-product-slider rtl:mr-5 ltr:ml-5 md:rtl:mr-10 md:ltr:ml-10 mb-5 md:mb-10 cart_slider overflow-x-hidden">
+		<div class="w-full flex flex-col justify-center items-start text-center pb-4 md:pb-8">
+			<span class=" flex items-center gap-2 overflow-hidden pb-4">
+				<h1 class="text-[clamp(1.375rem,1.1216rem+1.0811vw,2rem)] font-medium leading-[28px] text-font">
+				{{ trans('pages.single.similar') }}
+				</h1>
+			</span>
+		</div>
+		<div class="products-fixed-slider-{{position}} relative">
+			<salla-products-slider
+				id="similar-products-slider-{{position}}"
+				type="carousel"
+				class="product-slider"
+				 type="carousel"
+            class="product-slider"
+            slider-config='{
+                    "slidesPerView": 1.5,
+                    "spaceBetween": 12,
+                    "speed": 1000,
+                    "effect": "slide",
+                    "lazy": true,
+                    "breakpoints": {
+                    "480": { "slidesPerView": 2, "spaceBetween": 12 },
+                    "768": { "slidesPerView": 3, "spaceBetween": 12 },
+                    "1280": { "slidesPerView": 4.5, "spaceBetween": 12 }
+                    },
+                    "autoplay": {
+                    "delay": 3000,
+                    "disableOnInteraction": false,
+                    "pauseOnMouseEnter": true
+                    }
+                }'
+				source="related"
+				limit="{{ limit }}"
+				source-value="{{ product.id }}"
+				display-all-url="{{ display_all_url }}"
+				slider-id="slider-with-bg-{{ position }}">
+			</salla-products-slider>
+		</div>
+	</div>
+{% endblock %}
+
+
+
+{% block scripts %}
+    <style>
+        /* ==========================================================
+        Cart Page Custom Styling
+        Added directly inside the Twig file and scoped to this page
+        ========================================================== */
+
+        .s-conditional-offer-container {
+            background-color: transparent;
+        }
+
+        /* Desktop */
+        @media (min-width: 768px) {
+            .s-conditional-offer-container {
+                padding-left: 0;
+                padding-right: 0;
+                padding-top: 0;
+                padding-bottom: 25px;
+                gap: 0;
+            }
+        }
+
+        .s-conditional-offer-progress-line-inactive {
+            height: 4px;
+            border-radius: 42px;
+            background: rgba(196, 33, 38, 0.15);
+        }
+
+        .s-conditional-offer-progress-line-active {
+            height: 4px;
+            border-radius: 42px;
+            background: #C42126;
+        }
+
+        .s-conditional-offer-active-checkpoint {
+            border-color: #C42126;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .s-conditional-offer-progress-container {
+                margin-bottom: 0;
+                height: 5rem;
+            }
+
+            .s-conditional-offer-container {
+                gap: 0;
+                padding-top: 0;
+            }
+
+            .s-conditional-offer-checkpoint {
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        .s-cart-item-offers-container {
+            margin-top: 0;
+        }
+
+        .s-cart-item-offers-container .s-cart-item-offers-details div {
+            display: flex;
+            gap: 4px;
+        }
+
+        .s-cart-item-offers-container .s-cart-item-offers-title {
+            margin-bottom: 0;
+        }
+
+        .s-cart-item-offers-container .s-cart-item-offers-discount {
+            align-content: center;
+        }
+
+        @media (max-width: 1024px) {
+            .s-cart-item-offers-title {
+                font-size: 10px;
+            }
+        }
+
+        .attachments {
+            margin-top: 8px;
+        }
+@media (max-width: 767px) {
+    .sticky-cart-button {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 999999;
+        background: #ffffff;
+        padding: 16px;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .sticky-cart-button #cart-submit {
+        width: 100%;
+    }
+
+    /* Prevent page content from being hidden behind the fixed button */
+    body {
+        padding-bottom: 90px;
+    }
+}
+
+@media (min-width: 768px) {
+    .sticky-cart-button {
+        position: static;
+        background: transparent;
+        padding: 0;
+        border-top: 0;
+        box-shadow: none;
+    }
+}
+    </style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const wrap = document.querySelector('.cart-submit-wrap');
+    if (!wrap || !wrap.classList.contains('sticky-cart-button')) return; // stop if setting is off
+
+    const placeholder = document.createElement('div');
+    placeholder.id = 'cart-submit-placeholder';
+    wrap.parentElement.insertBefore(placeholder, wrap); // save original position
+
+    function handleResize() {
+        if (window.innerWidth < 768) {
+            if (wrap.parentElement !== document.body) {
+                document.body.appendChild(wrap);
+            }
+            wrap.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:999999;background:white;padding:1rem;border-top:1px solid #e5e7eb;display:block;';
+        } else {
+            const ph = document.getElementById('cart-submit-placeholder');
+            if (ph && wrap.parentElement !== ph.parentElement) {
+                ph.parentElement.insertBefore(wrap, ph);
+            }
+            wrap.style.cssText = 'position:static;padding:0;border-top:none;background:transparent;z-index:auto;';
+        }
+    }
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+});
+</script>
+    <script defer src="{{ 'checkout.js' | asset }}"></script>
+
+    <script>
+        window.cartItems = {{ cart.items | default([]) | json_encode|raw }};
+        console.log(window.cartItems);
+    </script>
+{% endblock %}

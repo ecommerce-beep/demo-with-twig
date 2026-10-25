@@ -1,0 +1,122 @@
+{% extends 'layouts.customer' %}
+
+{% block head_scripts %}
+  <script defer data-cfasync="false" src="{{ 'wishlist-card.js'|asset }}"></script>
+
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      const productList = document.querySelector('#wishlist salla-products-list')
+      if (!productList) return
+
+      let userInteracted = false
+      const observer = new MutationObserver(() => {
+        const items = productList.querySelectorAll(
+          'custom-wishlist-card, salla-product-card, .s-product-card-entry'
+        )
+
+        if (!userInteracted) {
+          userInteracted = true
+          return
+        }
+
+        if (items.length === 0) {
+          window.location.reload()
+        }
+      })
+
+      observer.observe(productList, {
+        childList: true,
+        subtree: true
+      })
+    })
+  </script>
+{% endblock %}
+
+{% block inner_content %}
+<div class="space-y-5 w-full" id="wishlist">
+  {% hook 'customer:wishlist.items.start' %}
+
+  <div class="JO-wishlist container">
+    {% if (products|length) > 0 %}
+      <salla-products-list
+        source="wishlist"
+        product-card-component="custom-wishlist-card">
+      </salla-products-list>
+    {% else %}
+      <div class="no-content-placeholder">
+        <h2 class="no-content-placeholder__title">{{ trans('common.wishlist_empty') }}</h2>
+      </div>
+    {% endif %}
+  </div>
+
+  {% hook 'customer:wishlist.items.end' %}
+</div>
+{% endblock %}
+{% block after_customer_content %}
+<div class="rtl:mr-5 ltr:ml-5 md:rtl:mr-10 md:ltr:ml-10  latest">
+   <div class="w-full flex flex-col justify-center items-start text-center pb-4 md:pb-8">
+			<span class=" flex items-center gap-2 overflow-hidden pb-4">
+				<h1 class="text-[clamp(1.375rem,1.1216rem+1.0811vw,2rem)] font-medium leading-[28px] text-font-color">
+				{{ trans('pages.single.similar') }}
+				</h1>
+			</span>
+  </div>
+
+  <salla-products-slider
+    source="latest"
+    show-controls="{{ theme.settings.get('show_more') ? 'false' : 'true' }}"
+    slider-config='{
+      "slidesPerView": 1.2,
+      "spaceBetween": 10,
+      "speed": 1000,
+      "effect": "slide",
+      "centeredSlides": false,
+      "breakpoints": {
+        "551": {"spaceBetween": 10 , "slidesPerView": 2.2 },
+        "768": {"spaceBetween": 10 , "slidesPerView": 3.2 },
+        "1024": { "spaceBetween": 10, "slidesPerView": 4.2 }
+      }
+    }'
+    display-all-url>
+  </salla-products-slider>
+</div>
+<style>
+      .s-products-list-vertical-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Tablet */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .s-products-list-vertical-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .s-products-list-vertical-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Small Mobile */
+  @media (max-width: 375px) {
+    .s-products-list-vertical-cards {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+
+  /* Customer layout fix */
+  .main-content.max-w-3xl {
+    max-width: 100% !important;
+  }
+
+  /* Hide slider nav */
+  .latest .s-slider-block__title-nav {
+    display: none !important;
+  }
+	.main-content.max-w-3xl{
+		max-width: 100% !important;
+	}
+</style>
+{% endblock %}

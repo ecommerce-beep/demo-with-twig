@@ -1,0 +1,212 @@
+{#
+| Variable                   | Type        | Description                                                          |
+|----------------------------|-------------|----------------------------------------------------------------------|
+| page                       | object      |                                                                      |
+| page.title                 | string      | *could be html                                                       |
+| page.slug                  | string      | ex: "cat.show"                                                       |
+| category                   | ?Category   |                                                                      |
+| category.name              | string      |                                                                      |
+| category.url               | string      |                                                                      |
+| category.sub_categories    | ?Category[] |                                                                      |
+| category.image             | ?string     |                                                                      |
+| filters                     | bool        | is filters allowed here or not                                        |
+| sort_options[]             | SortList[]  |                                                                      |
+| sort_options[].id          | string      | ourSuggest, bestSell, topRated, priceFromTopToLow, priceFromLowToTop |
+| sort_options[].name        | string      |                                                                      |
+| sort_options[].is_selected | bool        | Is current page sorted by it                                         |
+| search_query               | ?string     |                                                                      |
+#}
+{% extends "layouts.master" %}
+{% block content %}
+
+
+
+	<div class="AR-index mt-12">
+	
+	<div class="container">
+		<nav class="breadcrumbs w-full pt-5 center-between text-2xl !block">
+			<salla-breadcrumb></salla-breadcrumb>
+		</nav>
+	</div>
+
+		{#
+    Hook: product.index.before_products_group_with_filter
+    Fires before the products grid and filter sidebar wrapper.
+    Use this hook to inject content above the products listing area.
+  #}
+	<div class="s-blocks-wrapper s-before-products-list !mt-0">{% hook 'product.index.before_products_group_with_filter' %}</div>
+
+		<div
+			class="container mb-10 mt-4 md:mt-10">
+			{# add breadcumbs container in pages to make a space in case breadcrumbs is off #}
+        
+			<div class="flex items-start flex-col md:flex-row">
+				{% if filters %}
+					<button class="btn--close-sm close-filters sicon-cancel lg:hidden"></button>
+					<div class="md:w-72 lg:sticky lg:top-20 flex-none hidden lg:block">
+						<button class=" mb-4  text-center w-3/4 text-primary p-1 lg:flex  items-center gap-2">
+                        	
+							<i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+								<path d="M6.4 3.2L14.2 3.2M6.4 3.2C6.4 3.86274 5.86274 4.4 5.2 4.4C4.53726 4.4 4 3.86274 4 3.2M6.4 3.2C6.4 2.53726 5.86274 2 5.2 2C4.53726 2 4 2.53726 4 3.2M1 3.2H4M6.4 12.8H14.2M6.4 12.8C6.4 13.4627 5.86274 14 5.2 14C4.53726 14 4 13.4627 4 12.8M6.4 12.8C6.4 12.1373 5.86274 11.6 5.2 11.6C4.53726 11.6 4 12.1373 4 12.8M1 12.8L4 12.8M11.2 8L14.2 8M11.2 8C11.2 8.66274 10.6627 9.2 10 9.2C9.33726 9.2 8.8 8.66274 8.8 8M11.2 8C11.2 7.33726 10.6627 6.8 10 6.8C9.33726 6.8 8.8 7.33726 8.8 8M1 8H8.8" stroke="#27272A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg></i>
+							<span class="button-text text-base font-semibold">{{ trans('pages.index.filters') }}</span>
+						</button>
+						<salla-filters 
+							id="filters-menu" 
+							class="transition-all duration-300 ease-in-out overflow-hidden"
+							style="max-height: 1000px;">
+						</salla-filters>
+					</div>
+				{% endif %}
+
+				<div class="main-content flex-1 w-full {{ filters ? 'ltr:lg:ml-8 rtl:lg:mr-8' : '' }}">
+					<div class="mb-4 sm:mb-6 flex justify-between items-center">
+						<h1 class="primary-bold md:text-xl text-sm lg:text-center w-full lg:block hidden" id="page-main-title">{{ page.title|raw }}</h1>
+                       {% if filters %}
+								<a href="#filters-menu" class="filters-trigger bg-border-color text-primary lg:hidden mt-2 ">
+									<i class="sicon-filter text-gray-text text-2xl me-2.5"></i>
+								</a>
+						{% endif %}
+						<div class="flex items-center space-x-2 rtl:space-x-reverse">
+	
+							{% if sort_options|length %}
+									<select id="product-filter" class="form-input h-fit pt-0 pb-1 rtl:md:pl-10 ltr:md:pr-10 px-0 min-w-[200px] ">
+										{% for sort in sort_options %}
+											<option value="{{ sort.id }}" {{ sort.is_selected?'selected':'' }}>{{ sort.name }}</option>
+										{% endfor %}
+									</select>
+							{% endif %}
+						</div>
+           
+  
+
+					</div>
+                    <div class="flex lg:hidden items-center justify-between mb-4">
+						<h1 class="primary-bold md:text-xl text-sm lg:text-center flex-1" id="page-main-title">{{ page.title|raw }}</h1>
+						<div class="flex-1 justify-end flex items-center gap-1.5 text-2xl">
+							<button id="grid-two-columns" class="two-columns transition-all duration-300 ease-in-out"><i class="sicon-pause"></i></button>
+							<button id="grid-one-column" class="rotate-90 one-column transition-all duration-300 ease-in-out -mt-[5px]"><i class="sicon-pause"></i></button>
+						</div>
+                    </div>
+
+					{% hook 'product:index.items.start' %}
+					<div class="flex min-h-screen">
+						<salla-products-list class="flex-1 min-w-0" source="{{ page.slug }}" source-value="{{ page.id }}" {{ filters ?'filters-Results':'' }}></salla-products-list>
+					</div>
+					{% hook 'product:index.items.end' %}
+				</div>
+			</div>
+				{#
+    Hook: product.index.after_products_group_with_filter
+    Fires after the products grid and filter sidebar wrapper.
+    Use this hook to inject content below the products listing area.
+  #}
+	<div class="s-blocks-wrapper s-after-products-list">{% hook 'product.index.after_products_group_with_filter' %}</div>
+
+		</div>
+	</div>
+
+	<section class="container">
+	{% if store.settings.category.testimonial_enabled %}
+		{% component 'home.testimonials' %}
+	{% endif %}
+	{#
+    Hook: product.index.after_testimonials
+    Fires after the testimonials (store reviews) section.
+    Use this hook to inject content below the testimonials area.
+  #}
+	<div class="s-blocks-wrapper s-after-testimonials">{% hook 'product.index.after_testimonials' %}</div>
+	</section>
+<style>
+@media (max-width:1024px){
+/* Active state for buttons */
+.two-columns.active,
+.one-column.active {
+opacity:1;
+}
+.two-columns,
+.one-column {
+opacity:.5;
+}
+/* Grid column classes - adjust as needed */
+.s-products-list-wrapper.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+.s-products-list-wrapper.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+}
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Use event delegation since buttons exist from the start
+    document.addEventListener('click', function(e) {
+        const twoColumnsBtn = document.querySelector('.two-columns');
+        const oneColumnBtn = document.querySelector('.one-column');
+        const productListWrapper = document.querySelector('.s-products-list-wrapper');
+        
+        if (!productListWrapper) return;
+        
+        // Handle two columns button click
+        if (e.target.closest('.two-columns')) {
+            productListWrapper.classList.remove('grid-cols-1');
+            productListWrapper.classList.add('grid-cols-2');
+            
+            if (twoColumnsBtn) twoColumnsBtn.classList.add('active');
+            if (oneColumnBtn) oneColumnBtn.classList.remove('active');
+            
+            localStorage.setItem('gridView', 'two-columns');
+        }
+        
+        // Handle one column button click
+        if (e.target.closest('.one-column')) {
+            productListWrapper.classList.remove('grid-cols-2');
+            productListWrapper.classList.add('grid-cols-1');
+            
+            if (oneColumnBtn) oneColumnBtn.classList.add('active');
+            if (twoColumnsBtn) twoColumnsBtn.classList.remove('active');
+            
+            localStorage.setItem('gridView', 'one-column');
+        }
+    });
+    
+    // Apply saved view when wrapper appears
+    function applySavedView() {
+        const productListWrapper = document.querySelector('.s-products-list-wrapper');
+        if (!productListWrapper) return;
+        
+        const savedView = localStorage.getItem('gridView');
+        const twoColumnsBtn = document.querySelector('.two-columns');
+        const oneColumnBtn = document.querySelector('.one-column');
+        
+        if (savedView === 'one-column') {
+            productListWrapper.classList.remove('grid-cols-2');
+            productListWrapper.classList.add('grid-cols-1');
+            if (oneColumnBtn) oneColumnBtn.classList.add('active');
+            if (twoColumnsBtn) twoColumnsBtn.classList.remove('active');
+        } else {
+            // Default to two columns
+            productListWrapper.classList.remove('grid-cols-1');
+            productListWrapper.classList.add('grid-cols-2');
+            if (twoColumnsBtn) twoColumnsBtn.classList.add('active');
+            if (oneColumnBtn) oneColumnBtn.classList.remove('active');
+        }
+    }
+    
+    // Check for wrapper periodically
+    const checkWrapper = setInterval(function() {
+        if (document.querySelector('.s-products-list-wrapper')) {
+            applySavedView();
+            clearInterval(checkWrapper);
+        }
+    }, 100);
+});
+</script>
+
+{% endblock %}
+{% block scripts %}
+	<script defer src="{{ 'product.js' | asset }}"></script>
+{% endblock %}

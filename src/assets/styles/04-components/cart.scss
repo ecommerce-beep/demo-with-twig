@@ -1,0 +1,226 @@
+.cart_slider .s-product-card-content-category {
+  display: none;
+}
+.cart_slider{
+  .s-slider-block__title-nav{
+    display: none;
+  }
+}
+
+.cart {
+  .s-products-slider-card{
+    max-width: 100% !important;
+  }
+  .s-product-options-colors-wrapper{
+    flex-wrap: nowrap;
+    @media (max-width:374px) {
+      flex-wrap: wrap;
+    }
+  }
+
+  .s-list-tile-item{
+    background-color: #F4F0EB !important;
+  }
+  #cart-submit{
+    button{
+      border-radius: 0 !important;
+      @apply font-medium text-sm leading-5 tracking-wide text-center capitalize;
+    }
+  }
+@media (max-width: 768px) {
+  .s-product-options-thumbnails-wrapper {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .s-product-options-thumbnails-wrapper {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+  .btn--wishlist{
+    button{
+      border: none;
+      width: 25px;
+      height: 25px;
+    }
+  }
+  .btn--delete{
+    button{
+      width: 25px;
+      height: 25px;
+      border: none;
+      i{
+        font-size: 20px;
+      }
+    }
+  }
+     .s-product-card-wishlist-added.is-added.s-product-card-wishlist-added.is-added  svg {
+  fill: #e11d48 !important; /* red-600 */
+}
+  .btn--wishlist .is-added span svg {
+    fill: #e11d48 !important;
+  }
+
+  .btn--wishlist .is-added span svg:hover {
+    fill: #e11d48 !important;
+  }
+
+  /* When wishlist is not added */
+  .btn--wishlist .not-added span svg {
+    fill: var(--color-font) !important;
+  }
+
+  .btn--wishlist .not-added span svg:hover {
+    fill: var(--color-font) !important;
+  }
+/* الحالة الافتراضية */
+.s-product-card-wishlist-btn .filled {
+  display: none;
+}
+
+/* لما يكون في wishlist */
+.s-product-card-wishlist-btn.s-product-card-wishlist-added .filled {
+  display: block;
+}
+
+.s-product-card-wishlist-btn.s-product-card-wishlist-added .not-filled {
+  display: none;
+}
+
+/* لما يكون مش في wishlist */
+.s-product-card-wishlist-btn:not(.s-product-card-wishlist-added) .not-filled {
+  display: block;
+}
+
+.s-product-card-wishlist-btn:not(.s-product-card-wishlist-added) .filled {
+  display: none;
+}
+
+
+  .s-offer-bank-payment-wrapper{
+    padding-inline: 10px !important;
+  }
+  .s-offer-wrapper{
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin-block: 20px;
+    background-color: transparent;
+    .s-slider-block__title-nav{
+      display: none;
+    }
+    .s-offer-bank-message p {
+      color: var(--color-font);
+    }
+  }
+ 
+    .s-form-control{
+
+      background-color: transparent !important;
+      border: 2px solid rgb(218, 218, 218) !important;
+      border-radius: 0px !important;
+      width: 136px !important;
+      margin-top: 5px !important;
+      margin-inline: 8px !important;
+      color: var(--color-font);
+      @media (max-width:768px) {
+        width: 110px !important;
+        
+      }
+    
+    .s-product-options-option-booking .s-product-options-option-content{
+      margin: 0 !important;
+    }
+border-color: var(--color-primary);
+    background-color: var(--color-background) !important;
+    .s-product-options-option-label{
+      margin-block: 5px;
+      @apply font-semibold text-sm leading-5 tracking-normal
+    }
+  }
+  .s-product-options-colors-item{
+    div{
+      @apply font-medium text-xs leading-4 tracking-normal text-center
+    }
+  }
+  .s-conditional-offer-container{
+    background-color: var(--color-background) !important;
+  }
+    .s-product-options-wrapper {
+    background-color: transparent;
+    border: none;
+  }
+  .cart-item {
+  border-bottom: 1px solid #acacac63 !important; /* لون خفيف زي Tailwind gray-200 */
+}
+  .s-product-options-option-label{
+    color: var(--color-primary);
+  }
+  .btn--danger{ 
+    background-color: var(--color-primary) !important;
+
+}
+  .s-product-options-option{
+    gap: 10px;
+    .s-product-options-option-content{
+      width: 70%;
+    }
+  }
+  .sticky{
+
+    .cart-submit-wrap {
+      salla-button button {
+      background-color: var(--color-font);
+      padding-block: 14px;
+      font-size: clamp(1rem /* 16px */, 0.9235rem /* 14.776px */ + 0.3265vw, 1.25rem /* 20px */);
+      border: 0;
+      border-radius: 8px;
+
+    }
+  }
+  input{
+    background-color: transparent !important;
+    min-height: 50px !important;
+    padding-block: 14px;
+    border: 1px solid #D6DDDF !important;
+
+  }
+  .btn--coupon{
+    border-radius: 0;
+    min-height: 50px !important;
+  }
+}
+  .s-product-options-option {
+    display: flex;
+  }
+  salla-quantity-input {
+    background-color: transparent;
+    border-radius: none;
+    .s-quantity-input-container {
+      border-top: 1px solid #E4E4E7;
+      border-bottom: 1px solid #E4E4E7;
+      border-radius: 0;
+      .s-quantity-input-input {
+        width: 3rem !important;
+        background-color: transparent;
+        color: var(--color-font);
+        border: none;
+      }
+      .s-quantity-input-button {
+        svg {
+          fill: var(--color-primary);
+        }
+      }
+    }
+  }
+  .s-product-options-wrapper{
+      padding: 0 !important;
+  }
+}
+
+
+
+  .s-payments-list-item {
+  height: 50px !important;
+  width: 58px !important;
+  background-color: transparent !important;
+}

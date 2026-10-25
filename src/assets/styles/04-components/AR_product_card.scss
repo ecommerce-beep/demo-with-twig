@@ -1,0 +1,551 @@
+.btn-ready {
+  background-color: #000 !important; /* أسود */
+}
+.strike-diagonal {
+  position: relative;
+  overflow: hidden;
+}
+
+.strike-diagonal::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -10%;
+  width: 140%;
+  height: 1.5px;
+  background-color: #000000c5; /* gray */
+  transform: rotate(-35deg);
+  transform-origin: center;
+}
+.btn-ready .add-icon {
+  color: #9ca3af !important; /* رصاصي */
+}
+.carousel-slider .swiper-wrapper > div {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+.s-product-card {
+  // ===========================
+  // Product Card Entry Wrapper
+  // ===========================
+  &-entry:hover {
+    .flex-action {
+      top: 5px;
+      opacity: 1;
+    }
+  }
+  &-entry {
+    justify-content: unset !important;
+    background-color: var(--color-background);
+    // ===========================
+    // WISHLIST BUTTON STYLE
+    // ===========================
+    border-radius: 0 !important;
+    .s-product-card-wishlist-btn {
+      cursor: pointer;
+      position: static !important;
+      opacity: 1 !important;
+      transition: all 0.3s ease-in-out;
+    }
+    @media (max-width: 768px) {
+      .s-rating-stars-btn-star svg {
+        width: 10px;
+        height: 10px;
+      }
+    }
+    .s-product-card-wishlist-btn button {
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
+      opacity: 1 !important;
+      border: 0;
+      border-radius: 50% !important;
+      background-color: var(--color-background) !important;
+      width: 32px;
+      height: 32px;
+      @media (max-width: 768px) {
+        width: 32px;
+        height: 32px;
+      }
+      svg {
+        fill: var(--color-font) !important;
+        color: var(--color-font) !important;
+      }
+
+      &:hover {
+        background-color: var(--color-font) !important;
+        svg {
+          fill: var(--color-background) !important;
+          color: var(--color-background) !important;
+        }
+      }
+    }
+    .s-product-card-wishlist-btn .s-button-icon {
+      border-radius: 50% !important;
+      margin: 0 !important;
+    }
+    /* When wishlist is added */
+    .s-product-card-wishlist-added span svg {
+      fill: var(--color-font) !important;
+    }
+    .s-product-card-wishlist-added span svg:hover {
+      fill: var(--color-font) !important; /* Keep same color or change if needed */
+    }
+    /* When wishlist is not added */
+    .not-added span svg {
+      fill: var(--color-font) !important;
+    }
+    .not-added span svg:hover {
+      fill: var(--color-font) !important;
+    }
+    /* Hide not_filled version when added */
+    .s-product-card-wishlist-added span .not_filled {
+      display: none;
+    }
+    /* When wishlist is added */
+    .s-product-card-wishlist-added span svg {
+      fill: var(--color-font) !important;
+    }
+    .s-product-card-wishlist-added span svg:hover {
+      fill: var(--color-font) !important;
+    }
+    /* Hide the empty icon when added */
+    .s-product-card-wishlist-added span .not_filled {
+      display: none;
+    }
+    /* When wishlist is not added */
+    .not-added span svg {
+      fill: var(--color-font) !important;
+    }
+    .not-added span svg:hover {
+      fill: var(--color-font) !important;
+    }
+    /* Hide the filled icon when not added */
+    .not-added span .filled {
+      display: none;
+    }
+    // ===========================
+    // quick view button
+    // ===========================
+    .eye-model-style {
+      button {
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        background-color: var(--color-background);
+        border-radius: 50% !important;
+        width: 32px;
+        margin: 0;
+        height: 32px;
+        @media (max-width: 768px) {
+          width: 32px;
+          height: 32px;
+        }
+        .s-button-text {
+          overflow: visible !important;
+
+          i {
+            color: var(--color-font);
+          }
+        }
+
+        // ========== HOVER ==========
+        &:hover {
+          background-color: var(--color-font);
+          border-color: var(--color-font);
+
+          .s-button-text i {
+            color: var(--color-background); // عكس اللون عند الهوفر
+          }
+        }
+      }
+    }
+  }
+
+  // ===========================
+  // Product Card Image Styles
+  // ===========================
+  &-image {
+    &::before {
+      font-family: "sallaicons";
+      content: "\ec1f" !important;
+    }
+  }
+
+  // ===========================
+  // Vertical Style Variant
+  // ===========================
+
+  &-vertical {
+    &:hover{
+      .card-floating-btn{
+        bottom: 0 !important;
+        opacity: 1 !important;
+      }
+    }
+    border-radius: 0 !important;
+
+    // Image container inside vertical card
+    .s-product-card-image {
+      border-radius: 0 !important;
+      position: relative;
+      // max-height: 490px;
+      // min-height: 490px;
+      min-height: clamp(19rem, 15.1268rem + 16.5258vw, 30rem);
+      max-height: clamp(19rem, 15.1268rem + 16.5258vw, 30rem);
+      @media (max-width: 768px) {
+        // max-height: 261px;
+        // min-height: 261px;
+      }
+
+      // Floating button inside image
+
+    }
+      salla-add-product-button {
+          salla-button {
+            button {
+              color: var(--color-font);
+              border: none;
+              background-color: #F4F4F5 !important;
+            }
+          }
+        }
+
+    // Show floating button on hover of the vertical card
+   
+    .s-product-card-content-sub {
+      .s-product-card-sale-price {
+        span {
+          color: color-mix(in srgb, var(--color-font) 50%, transparent) !important;
+        }
+        h4 {
+          font-size: clamp(1.096875rem, 1.05rem + 0.2vw, 1.25rem) !important;
+          color: var(--color-font) !important;
+        }
+      }
+    }
+  }
+
+  // ===========================
+  // Horizontal Style Variant
+  // ===========================
+  &-horizontal {
+    .eye-model-style {
+      button {
+        width: 30px !important;
+        height: 30px !important;
+      }
+    }
+    .s-product-card-wishlist-btn button {
+      width: 30px !important;
+      height: 30px !important;
+    }
+    .s-product-card-image {
+      position: relative;
+      width: 118px;
+      height: 118px;
+      @media (max-width: 768px) {
+        width: 112px;
+        height: 109px;
+      }
+
+      // Floating button inside image
+    }
+    .s-product-card-content {
+      padding-inline: 8px;
+      padding-block: 0;
+
+      .s-product-card-content-sub {
+        // flex-grow: 1;
+        margin: 0 !important;
+        salla-add-product-button {
+          width: 32px;
+          height: 32px;
+          border: var(--color-font);
+          salla-button {
+            width: 32px;
+            height: 32px;
+            border: var(--color-font);
+            button {
+              background-color: var(--color-font);
+              color: var(--color-background);
+              border-radius: 50% !important;
+              border: var(--color-font);
+              width: 32px;
+              height: 32px;
+              &:hover {
+                color: var(--color-font);
+                background-color: var(--color-background);
+                border: var(--color-font);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ===========================
+  // Fit Height Style Variant
+  // ===========================
+  &-fit-height {
+  }
+
+  // ===========================
+  // Special Style Variant
+  // ===========================
+  &-special {
+  }
+
+  // ===========================
+  // Full Image Style Variant
+  // ===========================
+  &-full-image {
+  }
+
+  // ===========================
+  // Minimal Style Variant
+  // ===========================
+  &-minimal {
+  }
+
+  // ===========================
+  // Donation Style Variant
+  // ===========================
+  &-donation {
+  }
+
+  // ===========================
+  // Shadow Style Variant
+  // ===========================
+  &-shadow {
+  }
+
+  // ===========================
+  // Out of Stock Style Variant
+  // ===========================
+  &-out-of-stock {
+  }
+
+  // ===========================
+  // Wishlist Button Styles
+  // ===========================
+  &-wishlist-btn {
+  }
+
+  // ===========================
+  // Content Area
+  // ===========================
+  &-content {
+    padding: 4px 8px !important;
+    &-main {
+    }
+
+    &-sub {
+    }
+
+    &-footer {
+    }
+
+    &-title {
+    }
+
+    &-subtitle {
+    }
+
+    &-pie {
+      &-svg {
+        circle {
+          transition: stroke-dashoffset 1s linear;
+          -webkit-transition: stroke-dashoffset 1s linear;
+          -moz-transition: stroke-dashoffset 1s linear;
+          -ms-transition: stroke-dashoffset 1s linear;
+          -o-transition: stroke-dashoffset 1s linear;
+          stroke: #e8edf2;
+          stroke-width: 2px;
+          stroke-linecap: round;
+          fill: none;
+        }
+
+        &-base {
+        }
+
+        &-bar {
+          stroke: var(--color-font) !important;
+          stroke-dasharray: 100 100;
+          stroke-dashoffset: 100;
+        }
+      }
+    }
+
+    // Extra padding for special card content
+    &-extra-padding {
+    }
+  }
+
+  // ===========================
+  // Donation Input Styles
+  // ===========================
+  &-donation-input {
+  }
+}
+
+.s-product-card-vertical .s-product-card-promotion-title {
+  position: absolute;
+  top: 0rem;
+  left: 0px;
+  z-index: 1;
+  border-radius: 0;
+  background-color: var(--color-background);
+  color: #C70036;
+  font-weight: 400;
+  font-size: 12px;
+}
+.s-product-card-vertical
+  .s-product-card-promotion-title:where([dir="rtl"], [dir="rtl"] *) {
+  left: 0px !important;
+  right: auto;
+  border-radius:0;
+}
+/*Product flip hover effect */
+.product-flip-wrapper {
+  display: block;
+  position: relative;
+  perspective: 1000px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.product-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-style: preserve-3d;
+}
+
+.s-product-card-image:hover .product-flip-inner.has-flip {
+  transform: rotateY(180deg);
+}
+
+.product-flip-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  border-radius: 0 !important;
+}
+
+/* Front image - visible by default */
+.product-flip-face.front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+/* Back image - hidden initially */
+.product-flip-face.back {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+/* Optional: Add smooth transition for the flip */
+.s-product-card-image {
+  overflow: hidden;
+  border-radius: 0 !important;
+}
+
+/* Optional: Container styles for the image wrapper */
+.s-product-card-image,
+.s-product-card-image-full {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Maintain square ratio, adjust as needed */
+}
+
+/* Ensure images fill the container properly */
+.product-flip-face.lazy,
+.product-flip-face.lazy.loaded {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Alternative flip direction (horizontal) */
+.product-flip-wrapper.horizontal .product-flip-inner.has-flip {
+  transform: rotateX(180deg);
+}
+
+.product-flip-wrapper.horizontal .product-flip-face.back {
+  transform: rotateX(180deg);
+}
+
+/* Fade transition alternative */
+.product-flip-wrapper.fade .product-flip-inner.has-flip .front {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.product-flip-wrapper.fade .product-flip-inner.has-flip .back {
+  opacity: 1;
+  visibility: visible;
+}
+
+.product-flip-wrapper.fade .product-flip-face {
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.product-flip-wrapper.fade .product-flip-face.back {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .s-product-card-image:hover .product-flip-inner.has-flip {
+    transform: none; /* Disable flip on mobile if desired */
+  }
+
+  /* Alternative: Touch-friendly flip on mobile */
+  .product-flip-wrapper.mobile-flip:active .product-flip-inner.has-flip {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Loading state */
+.product-flip-face.lazy:not(.loaded) {
+  background-color: #f5f5f5;
+  min-height: 200px;
+}
+
+/* Accessibility: Ensure proper focus states */
+.product-flip-wrapper:focus-within .product-flip-inner.has-flip {
+  transform: rotateY(180deg);
+}
+
+/* Animation for the badge during flip */
+.product-flip-wrapper .s-product-card-badge {
+  transition: opacity 0.3s ease;
+  z-index: 3;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.product-flip-wrapper:hover .s-product-card-badge {
+  opacity: 0.8; /* Slightly fade badge during flip */
+}
+
+.salla-add-product-button.loading {
+  pointer-events: none;
+  opacity: 0.7;
+  .sicon-booking, .sicon-calendar-time, .sicon-cart {
+    display: none;
+  }
+}
+
+

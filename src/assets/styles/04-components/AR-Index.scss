@@ -1,0 +1,139 @@
+.mm-ocd__content{
+  @apply ltr:pr-3 rtl:pl-3;
+}
+.AR-index,
+.mm-ocd__content {
+  @apply bg-background;
+    .s-products-list-wrapper.s-products-list-filters-results{
+      @apply gap-2;
+   }
+  
+  .filters-trigger .sicon-filter{
+    @apply text-primary border border-primary  ;
+    padding: 6.5px;
+  }
+  .filters-trigger .sicon-filter::before{
+    content:"\f050" ;
+  }
+
+  .shadow-img {
+    box-shadow: -3px 2px 5px 0px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: -3px 2px 5px 0px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: -3px 2px 5px 0px rgba(0, 0, 0, 0.3);
+  }
+  salla-filters .s-filters-footer salla-button .s-button-element {
+    background-color: var(--color-primary);
+   
+  }
+  salla-filters .s-filters-footer salla-button .s-button-element:hover {
+    background-color: transparent;
+    @apply opacity-100 text-primary border border-primary;
+  }
+  .s-filters-footer .s-button-element .s-button-text {
+    @apply text-background p-1;
+  }
+    .s-filters-footer .s-button-element:hover  .s-button-text {
+    @apply text-primary;
+   }
+
+  .s-filters-footer {
+    padding: 32px 0 0;
+  }
+  salla-filters .s-filters-footer salla-button .s-button-element {
+    border-radius: 0;
+    background: var(--color-primary);
+    @apply text-background;
+  }
+
+  .s-filters-widget-container {
+    background-color: transparent;
+    @apply lg:px-0 ltr:pr-2.5 rtl:pl-2.5 px-2 py-4 m-0 rounded-none;
+  }
+  .s-filters-widget-more {
+    background: var(--color-primary);
+    
+    @apply text-background text-center py-2 px-4 border border-primary m-0 ;
+  }
+  .s-filters-widget-more:hover {
+    @apply text-primary;
+    background: var(--color-background);
+  }
+  .s-filters-radio {
+    @apply border-primary;
+  }
+  .s-filters-radio:checked::after{
+    @apply p-0 h-full w-full inset-0;
+  }
+  .s-filters-option-name {
+    @apply text-font p-1;
+  }
+  #filters-menu .s-button-primary {
+    @apply text-background;
+  }
+  .s-price-range-number-input {
+    border-radius: 0;
+    @apply border-primary bg-background;
+  }
+  .s-price-range-inputs .s-button-element.s-button-icon {
+    @apply text-primary border-primary;
+  }
+
+  .s-price-range-number-input::placeholder,
+  .s-price-range-currency {
+    @apply text-primary;
+  }
+
+  #product-filter {
+    @apply border-none bg-transparent;
+  }
+  .s-filters-footer salla-button .s-button-element:hover {
+    background-color: var(--color-primary);
+    @apply border-background text-background;
+  }
+  .s-price-range-inputs .s-button-element.s-button-icon {
+    @apply text-background;
+
+    background: var(--color-primary);
+  }
+  .s-price-range-number-input:focus::placeholder {
+    color: transparent;
+  }
+  .s-filters-widget-plusminus::before {
+    @apply hidden;
+  }
+  .s-filters-widget-plusminus{
+   @apply transition-all duration-500 text-xl; 
+   transform: translate(60%, -20%);
+  }
+  .s-filters-widget-plusminus-active{
+   transform:rotate(180deg) translateY(-90%);
+  }
+  .s-filters-widget-plusminus::after {
+    @apply rotate-0 text-xl font-light text-font opacity-100 transition-all duration-500 ease-in-out inset-0 !important;
+    background-color: transparent;
+    content: "\e96e";
+    font-family: "sallaicons" !important;
+  }
+  .s-infinite-scroll-btn {
+    @apply text-background;
+  }
+
+  .s-price-range-inputs .s-button-element.s-button-icon {
+    @apply border-primary;
+  }
+  .s-price-range-inputs .s-button-element .s-button-text span {
+    @apply text-background;
+  }
+    .s-price-range-currency{
+    @apply text-primary p-0 bg-background h-fit z-1;
+    margin-top: -12%;
+  }
+
+
+}
+  [dir=rtl] .s-price-range-currency{
+    margin-left: 10%;
+  }
+    [dir=ltr] .s-price-range-currency{
+    margin-right: 10%;
+  }
